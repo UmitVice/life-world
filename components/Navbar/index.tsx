@@ -64,6 +64,15 @@ const Navbar = () => {
             </div>
           </div>
         </div>
+                 {/* <!-- Right Side Menu (Loging or Register Menu) --> */}
+        <div className='hidden md:block md:ml-6'>
+          <div className='flex items-center'>
+            <button className='flex items-center text-white bg-cyan-600 hover:bg-cyan-500 hover:text-white rounded-md px-3 py-2'>
+              <i className='fa-brands fa-google text-white mr-2'></i>
+              <span>Login or Register</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     </nav>
