@@ -11,9 +11,9 @@ const Navbar = () => {
   const pathname = usePathname();
 
   return (
-    <nav className='bg-emerald-500 border-b border-gray-300'>
+    <nav className='bg-sky-800 border-b border-gray-300'>
       <div className='mx-auto max-w-7xl px-2 sm:px-6 lg:px-8'>
-        <div className='relative flex h-20 items-center justify-between'>
+        <div className='relative flex h-16 items-center justify-between'>
           <div className='absolute inset-y-0 left-0 flex items-center md:hidden'>
             {/* <!-- Mobile menu button--> */}
             <button
@@ -57,16 +57,16 @@ const Navbar = () => {
                 <Link
                   href='/'
                   className={`${
-                    pathname === '/' ? 'bg-black' : ''
-                  } text-white hover:bg-gray-800 hover:text-white rounded-md px-3 py-2`}
+                    pathname === '/' ? 'bg-emerald-500' : ''
+                  } text-white hover:bg-emerald-400 hover:text-white rounded-md px-3 py-2`}
                 >
                   Home
                 </Link>
                 <Link
                   href='/properties'
                   className={`${
-                    pathname === '/properties' ? 'bg-black' : ''
-                  } text-white hover:bg-gray-800 hover:text-white rounded-md px-3 py-2`}
+                    pathname === '/properties' ? 'bg-emerald-500' : ''
+                  } text-white hover:bg-emerald-400 hover:text-white rounded-md px-3 py-2`}
                 >
                   Properties
                 </Link>
@@ -74,8 +74,8 @@ const Navbar = () => {
                     <Link
                       href='/properties/add'
                       className={`${
-                        pathname === '/properties/add' ? 'bg-black' : ''
-                      } text-white hover:bg-gray-800 hover:text-white rounded-md px-3 py-2`}
+                        pathname === '/properties/add' ? 'bg-emerald-500' : ''
+                      } text-white hover:bg-emerald-400 hover:text-white rounded-md px-3 py-2`}
                     >
                      Add Property
                     </Link>
@@ -204,16 +204,16 @@ const Navbar = () => {
                 <Link
                   href='/'
                   className={`${
-                    pathname === '/' ? 'bg-cyan-600 text-white' : ''
-                  } 'hover:text-white hover:bg-cyan-500  block rounded-md px-3 py-2 text-base 
+                    pathname === '/' ? 'bg-emerald-500 ' : ''
+                  } ' hover:bg-emerald-400 text-white block rounded-md px-3 py-2 text-base 
                   font-medium'`}                >
                   Home
                 </Link>
                 <Link
                   href='/properties'
                   className={`${
-                    pathname === '/properties' ? 'bg-cyan-600 text-white' : ''
-                  } 'hover:text-white hover:bg-cyan-500  block rounded-md px-3 py-2 text-base 
+                    pathname === '/properties' ? 'bg-emerald-500 ' : ''
+                  } ' hover:bg-emerald-400 text-white  block rounded-md px-3 py-2 text-base 
                   font-medium'`}     
                 >
                   Properties
@@ -222,8 +222,8 @@ const Navbar = () => {
                   <Link
                     href='/properties/add'
                     className={`${
-                      pathname === '/properties/add' ? 'bg-cyan-600 text-white' : ''
-                    } 'hover:text-white hover:bg-cyan-500  block rounded-md px-3 py-2 text-base 
+                      pathname === '/properties/add' ? 'bg-emerald-500 ' : ''
+                    } ' hover:bg-emerald-400 text-white block rounded-md px-3 py-2 text-base 
                     font-medium'`}
                   >
                   Add Property
