@@ -82,6 +82,7 @@
     "updatedAt": "2024-01-01T00:00:00.000Z"
   },
   {
+    "_id": "3",
     "owner": "4",
     "name": "Downtown Loft",
     "type": "Condo",
@@ -373,20 +374,55 @@
     "updatedAt": "2024-01-10T00:00:00.000Z"
   },
   {
-    "id": "11",
-    "ownerId": "5",
-    "title": "Modern Loft in Downtown",
+    "_id": "11",
+    "owner": "7",
+    "name": "Historic Downtown Loft",
+    "type": "Apartment",
+    "description": "Step back in time with a stay in this historic downtown loft.",
+    "location": {
+      "street": "123 History Lane",
+      "city": "Philadelphia",
+      "state": "PA",
+      "zipcode": "19101"
+    },
+    "beds": 2,
+    "baths": 1,
+    "square_feet": 1200,
+    "amenities": [
+      "High-Speed Internet",
+      "Air Conditioning",
+      "Smart TV",
+      "Coffee Maker"
+    ],
+    "rates": {
+      "weekly": 550,
+      "monthly": 2100
+    },
+    "seller_info": {
+      "name": "Matthew Harris",
+      "email": "matthew@gmail.com",
+      "phone": "215-555-5555"
+    },
+    "images": [],
+    "is_featured": false,
+    "createdAt": "2024-01-10T00:00:00.000Z",
+    "updatedAt": "2024-01-10T00:00:00.000Z"
+  },
+  {
+    "_id": "12",
+    "owner": "5",
+    "name": "Modern Loft in Downtown",
     "type": "Apartment",
     "description": "Experience urban living in this modern loft located in downtown.",
-    "address": {
-      "street": "123 Urban Street",
-      "city": "Chicago",
-      "state": "IL",
-      "zipcode": "60601"
+    "location": {
+      "street": "523 Urban Street",
+      "city": "Philadelphia",
+      "state": "PA",
+      "zipcode": "19101"
     },
-    "bedrooms": 1,
-    "bathrooms": 1,
-    "size": 800,
+    "beds": 2,
+    "baths": 1,
+    "square_feet": 1200,
     "amenities": [
       "Open Floor Plan",
       "City Views",
@@ -394,55 +430,18 @@
       "Wifi",
       "Parking Available"
     ],
-    "pricing": {
-      "monthly": 2500
+    "rates": {
+      "weekly": 650,
+      "monthly": 2900
     },
-    "seller": {
+    "seller_info": {
       "name": "Emily Smith",
       "email": "emily@gmail.com",
-      "phone": "312-555-5555"
+      "phone": "215-555-5555"
     },
     "images": [],
-    "featured": true,
-    "createdAt": "2024-02-10T00:00:00.000Z",
-    "updatedAt": "2024-02-10T00:00:00.000Z"
-  },
-  {
-    "id": "12",
-    "ownerId": "6",
-    "title": "Luxurious Beachfront Villa",
-    "type": "Villa",
-    "description": "Enjoy luxury living with breathtaking ocean views in this beachfront villa.",
-    "address": {
-      "street": "456 Oceanfront Avenue",
-      "city": "Miami",
-      "state": "FL",
-      "zipcode": "33101"
-    },
-    "bedrooms": 5,
-    "bathrooms": 4,
-    "size": 3500,
-    "amenities": [
-      "Private Pool",
-      "Ocean Views",
-      "Direct Beach Access",
-      "Wifi",
-      "Full Kitchen",
-      "Washer & Dryer",
-      "Parking Available"
-    ],
-    "pricing": {
-      "nightly": 475,
-      "weekly": 2000
-    },
-    "seller": {
-      "name": "Robert Johnson",
-      "email": "robert@gmail.com",
-      "phone": "305-555-5555"
-    },
-    "images": [],
-    "featured": true,
-    "createdAt": "2024-02-15T00:00:00.000Z",
-    "updatedAt": "2024-02-15T00:00:00.000Z"
+    "is_featured": false,
+    "createdAt": "2024-01-10T00:00:00.000Z",
+    "updatedAt": "2024-01-10T00:00:00.000Z"
   }
 ]
