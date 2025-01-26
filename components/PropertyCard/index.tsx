@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface Property {
+  _id: string;
   type: string;
   name: string;
   rates: {
