@@ -1,42 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
-
-interface Property {
-  _id: string;
-  type: string;
-  name: string;
-  rates: {
-    nightly?: number;
-    weekly?: number;
-    monthly?: number;
-  }
-  images?: string[];
-  beds: number;
-  baths: number;
-  square_feet: number;
-}
+import { IProperty } from '@/models/Property';
 
 interface PropertyCardProps {
-  property: Property;
+  property: IProperty;
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
-
-  const placeHolderImagePath = "/images/properties/1.jpg";
-
-  const getRentalRate = () => {
+  const placeHolderImagePath = '/images/placeholder.jpg';
+  const getRentalRate = (): string => {
     const { rates } = property;
-
     if (rates?.monthly) {
-        return `$${rates?.monthly}/monthly`;
+      return `$${rates?.monthly?.toLocaleString()}/mo`;
     } else if (rates?.weekly) {
-        return `$${rates?.weekly}/weekly`;
+      return `$${rates?.weekly?.toLocaleString()}/wk`;
     } else if (rates?.nightly) {
-        return `$${rates?.nightly}/nightly`;
-    } else {
-        return "Price not available";
+      return `$${rates?.nightly?.toLocaleString()}/night`;
     }
-  }
+    return '';
+  };
 
   return (
     <div className="rounded-xl shadow-md relative bg-sky-100">

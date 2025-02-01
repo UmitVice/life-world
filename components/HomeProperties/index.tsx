@@ -1,8 +1,7 @@
 import Link from 'next/link';
-import properties from '@/properties.json';
 import PropertyCard from '@/components/PropertyCard';
 import connectDB from '@/config/database';
-import Property from '@/models/Property';
+import Property, { IProperty } from '@/models/Property';
 
 const HomeProperties = async () => {
   await connectDB();
@@ -10,7 +9,7 @@ const HomeProperties = async () => {
   const recentProperties = await Property.find({})
     .sort({ createdAt: -1 })
     .limit(3)
-    .lean()
+    .lean<IProperty[]>();
 
   return (
     <>
