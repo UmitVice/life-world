@@ -6,13 +6,13 @@ import Link from 'next/link';
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const pathname = usePathname();
 
   return (
-    <nav className='bg-sky-800 border-b border-gray-300'>
-      <div className='mx-auto max-w-7xl px-2 sm:px-6 lg:px-8'>
+    <nav className='bg-teal-800 border-b border-gray-300' >
+      <div className='mx-auto max-w-8xl px-2 sm:px-6 lg:px-8'>
         <div className='relative flex h-16 items-center justify-between'>
           <div className='absolute inset-y-0 left-0 flex items-center md:hidden'>
             {/* <!-- Mobile menu button--> */}

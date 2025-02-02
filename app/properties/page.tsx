@@ -11,8 +11,8 @@ const PropertiesPage = async () => {
 
   return (
     <div>
-      <h1 className="text-3xl">Properties</h1>
       <section className="px-4 py-6">
+      <h1 className="text-3xl container-xl lg:container m-auto px-4 py-2">Properties</h1>
         <div className="container-xl lg:container m-auto px-4 py-6">
           {properties?.length === 0 ? (
             <p>No properties found</p>
