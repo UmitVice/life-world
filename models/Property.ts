@@ -32,7 +32,6 @@ export interface IProperty {
   updatedAt: Date;
 }
 
-// Mongoose Schema
 const propertySchema = new Schema<IProperty>({
   owner: {
     type: Schema.Types.ObjectId,

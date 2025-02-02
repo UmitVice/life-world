@@ -15,7 +15,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
     } else if (rates?.weekly) {
       return `$${rates?.weekly?.toLocaleString()}/wk`;
     } else if (rates?.nightly) {
-      return `$${rates?.nightly?.toLocaleString()}/night`;
+      return `$${rates?.nightly?.toLocaleString()}/ni`;
     }
     return '';
   };
@@ -70,7 +70,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           <span className="text-orange-700"> Boston MA </span>
         </div>
         <Link
-          href="/property"
+          href={`/properties/${property?._id}`}
           className="h-[36px] bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-center text-sm"
         >
           Details
