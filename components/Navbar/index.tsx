@@ -7,6 +7,7 @@ import { FaGoogle } from 'react-icons/fa';
 
 const Navbar = () => {
   const { data: session } = useSession();
+  const profileImage = session?.user?.image;
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -105,14 +106,14 @@ const Navbar = () => {
             <div className='hidden md:block md:ml-6'>
             <div className='flex items-center'>
               {providers && 
-                Object.values(providers).map((provider, index) => (
+                Object?.values(providers)?.map((provider, index) => (
                   <button 
                     key={index}
-                    onClick={ () => signIn((provider as any).id)}
+                    onClick={() => signIn((provider as any)?.id)}
                     className='flex items-center text-white bg-gray-700 hover:bg-gray-900
                     hover:text-white rounded-md px-3 py-2'
                   >
-                    <FaGoogle className='fa-brands fa-google text-white mr-2'></FaGoogle>
+                    <FaGoogle className='fa-brands fa-google text-white mr-2' />
                     <span>Login or Register</span>
                   </button>
               ))}
@@ -128,7 +129,7 @@ const Navbar = () => {
                 className='relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2
                  focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800'
               >
-                <span className='absolute -inset-1.5'></span>
+            
                 <span className='sr-only'>View notifications</span>
                 <svg
                   className='h-6 w-6'
@@ -145,11 +146,12 @@ const Navbar = () => {
                   />
                 </svg>
               </button>
-              <span className='absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none
+              {/*<span className='absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none
                text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full'>
                 2
-                {/* <!-- Replace with the actual number of notifications --> */}
+                {/* <!-- Replace with the actual number of notifications --> 
               </span>
+              */}
             </Link>
             {/* <!-- Profile dropdown button --> */}
             <div className='relative ml-3'>
@@ -165,9 +167,11 @@ const Navbar = () => {
                 >          
                   <span className='sr-only'>Open user menu</span>
                   <img
+                    src={profileImage || '/images/icons/profile.png'}
+                    alt='Profile Image'
+                    width={40}
+                    height={40}
                     className='h-8 w-8 rounded-full'
-                    src='/images/icons/profile.png'
-                    alt=''
                   />
                 </button>
               </div>
@@ -206,6 +210,10 @@ const Navbar = () => {
                   role='menuitem'
                   tabIndex={-1}
                   id='user-menu-item-2'
+                  onClick={() => {
+                    setIsProfileMenuOpen(false);
+                    signOut();
+                  }}
                 >
                   Sign Out
                 </button>
@@ -252,11 +260,20 @@ const Navbar = () => {
                 )}
 
                 {!session && (
-                   <button className='flex items-center text-white bg-gray-700 hover:bg-gray-900
-                   hover:text-white rounded-md px-3 py-2 my-4'>
-                     <FaGoogle className='fa-brands fa-google mr-2'></FaGoogle>
-                     <span>Login or Register</span>
-                   </button>
+                 <div>
+                  {providers && 
+                    Object?.values(providers)?.map((provider, index) => (
+                      <button 
+                        key={index}
+                        onClick={ () => signIn((provider as any).id)}
+                        className='flex items-center text-white bg-gray-700 hover:bg-gray-900
+                        hover:text-white rounded-md px-3 py-2'
+                      >
+                        <FaGoogle className='fa-brands fa-google text-white mr-2' />
+                        <span>Login or Register</span>
+                      </button>
+                  ))}
+                 </div>
                 )}
               </div>
             </div>

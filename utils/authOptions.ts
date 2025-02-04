@@ -1,4 +1,6 @@
 import GoogleProvider from 'next-auth/providers/google';
+import connectDB from '@/config/database';
+import User from '@/models/User';
 
 export const authOptions = {
   providers: [
@@ -14,19 +16,30 @@ export const authOptions = {
       }
     })
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn ({ profile }:any) {
-      if (profile) {
-        console.log('Signed in profile:', profile);
+      await connectDB();
+
+      const userExit = await User?.findOne({ email: profile?.email });
+
+      if (!userExit) {
+        const username = profile?.name?.slice(0, 20);
+
+        await User.create({
+          email: profile?.email,
+          username,
+          image: profile?.picture,
+        });
       }
-      return true; 
+
+      return true;
     },
     
-    async session ({ session, token }:any) {
-      if (session?.user) {
-        session.user.id = token.sub;
-      }
+    async session ({ session}:any) {
+      const user = await User?.findOne({ email: session?.user?.email });
+
+      session.user.id = user?._id?.toString();
+
       return session;
     },
   }
