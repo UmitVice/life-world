@@ -13,7 +13,7 @@ const Footer = () => {
         <div
           className="flex flex-wrap justify-center md:justify-start mb-4 md:mb-0"
         >
-          <ul className="flex space-x-4">
+          <ul className="flex space-x-12">
             <li>
                 <Link href="/properties">Properties</Link>
             </li>
@@ -21,13 +21,17 @@ const Footer = () => {
                 <Link href="/terms">Terms of Service</Link>
             </li>
           </ul>
+          
         </div>
+        
         <div>
-          <p className="text-sm text-gray-500 mt-2 md:mt-0">
-            &copy; {currentYear} Live World. Made by Umit Vice.
-          </p>
+      
         </div>
+        
       </div>
+      <p className="text-sm text-gray-500 md:my-4 text-center w-full">
+            &copy; {currentYear} Live World. Made by Umit Vice.
+        </p>
     </footer>
   )
 }
