@@ -1,14 +1,29 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { signIn, signOut, useSession, getProviders } from 'next-auth/react';
+import { FaGoogle } from 'react-icons/fa';
 
 const Navbar = () => {
+  const { data: session } = useSession();
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [providers, setProviders] = useState(null);
 
   const pathname = usePathname();
+
+  useEffect(() => {
+    const setAuthProviders = async () => {
+      const res:any = await getProviders();
+      setProviders(res);
+    }
+
+    setAuthProviders();
+  }, []);
+  
+  useEffect(() => {}, []);
 
   return (
     <nav className='bg-teal-800 border-b border-gray-300' >
@@ -70,7 +85,7 @@ const Navbar = () => {
                 >
                   Properties
                 </Link>
-                { isLoggedIn && (
+                {session && (
                     <Link
                       href='/properties/add'
                       className={`${
@@ -86,19 +101,26 @@ const Navbar = () => {
           </div>
 
           {/* <!-- Right Side Menu (Loging or Register Button) --> */}
-          { !isLoggedIn && (
+          {!session && (
             <div className='hidden md:block md:ml-6'>
             <div className='flex items-center'>
-              <button className='flex items-center text-white bg-gray-700 hover:bg-gray-900
-                hover:text-white rounded-md px-3 py-2'>
-                <i className='fa-brands fa-google text-white mr-2'></i>
-                <span>Login or Register</span>
-              </button>
+              {providers && 
+                Object.values(providers).map((provider, index) => (
+                  <button 
+                    key={index}
+                    onClick={ () => signIn((provider as any).id)}
+                    className='flex items-center text-white bg-gray-700 hover:bg-gray-900
+                    hover:text-white rounded-md px-3 py-2'
+                  >
+                    <FaGoogle className='fa-brands fa-google text-white mr-2'></FaGoogle>
+                    <span>Login or Register</span>
+                  </button>
+              ))}
             </div>
           </div>
           )}
       
-          { isLoggedIn && (
+          {session && (
             <div className='absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0'>
             <Link href='messages' className='relative group'>
               <button
@@ -217,7 +239,7 @@ const Navbar = () => {
                 >
                   Properties
                 </Link>
-                { isLoggedIn && (
+                {session && (
                   <Link
                     href='/properties/add'
                     className={`${
@@ -229,10 +251,10 @@ const Navbar = () => {
                   </Link>
                 )}
 
-                { !isLoggedIn && (
+                {!session && (
                    <button className='flex items-center text-white bg-gray-700 hover:bg-gray-900
                    hover:text-white rounded-md px-3 py-2 my-4'>
-                     <i className='fa-brands fa-google mr-2'></i>
+                     <FaGoogle className='fa-brands fa-google mr-2'></FaGoogle>
                      <span>Login or Register</span>
                    </button>
                 )}
