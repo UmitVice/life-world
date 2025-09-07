@@ -1,41 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
-
-interface Property {
-  type: string;
-  name: string;
-  rates: {
-    nightly?: number;
-    weekly?: number;
-    monthly?: number;
-  }
-  images?: string[];
-  beds: number;
-  baths: number;
-  square_feet: number;
-}
+import { IProperty } from '@/models/Property';
 
 interface PropertyCardProps {
-  property: Property;
+  property: IProperty;
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
-
-  const placeHolderImagePath = "/images/properties/1.jpg";
-
-  const getRentalRate = () => {
+  const placeHolderImagePath = '/images/placeholder.jpg';
+  const getRentalRate = (): string => {
     const { rates } = property;
-
     if (rates?.monthly) {
-        return `$${rates?.monthly}/monthly`;
+      return `$${rates?.monthly?.toLocaleString()}/mo`;
     } else if (rates?.weekly) {
-        return `$${rates?.weekly}/weekly`;
+      return `$${rates?.weekly?.toLocaleString()}/wk`;
     } else if (rates?.nightly) {
-        return `$${rates?.nightly}/nightly`;
-    } else {
-        return "Price not available";
+      return `$${rates?.nightly?.toLocaleString()}/ni`;
     }
-  }
+    return '';
+  };
 
   return (
     <div className="rounded-xl shadow-md relative bg-sky-100">
@@ -59,22 +42,23 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
       <div className="flex justify-center gap-4 text-gray-500 mb-4">
         <p>
-          <i className="fa-solid fa-bed"></i> {property?.beds} { " " }
-          <span className="md:hidden lg:inline">Beds</span>
+          <i className="fa-solid fa-bed"></i>{property?.beds} 
+          <span className="md:hidden lg:inline"> Beds</span>
         </p>
         <p>
-          <i className="fa-solid fa-bath"></i> {property?.baths} { " " }
-          <span className="md:hidden lg:inline">Baths</span>
+          <i className="fa-solid fa-bath"></i>{property?.baths}
+          <span className="md:hidden lg:inline"> Baths</span>
         </p>
         <p>
-          <i className="fa-solid fa-ruler-combined"></i>
-          {property?.square_feet} <span className="md:hidden lg:inline">sqft</span>
+          <i className="fa-solid fa-ruler-combined">{property?.square_feet}</i>
+          {property?.square_feet}<span className="md:hidden lg:inline"> sqft</span>
         </p>
       </div>
 
       <div
         className="flex justify-center gap-4 text-green-900 text-sm mb-4"
       >
+        {property?.description}
       </div>
 
       <div className="border border-gray-100 mb-5"></div>
@@ -84,10 +68,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           <i
             className="fa-solid fa-location-dot text-lg text-orange-700"
           ></i>
-          <span className="text-orange-700"> Boston MA </span>
+          <span className="text-orange-700">{property?.location?.city}, {property?.location?.state}</span>
         </div>
         <Link
-          href="/property"
+          href={`/properties/${property?._id}`}
           className="h-[36px] bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-center text-sm"
         >
           Details
