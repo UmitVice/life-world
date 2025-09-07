@@ -1,9 +1,11 @@
 import Link from 'next/link';
+import { unstable_noStore as noStore } from 'next/cache';
 import PropertyCard from '@/components/PropertyCard';
 import connectDB from '@/config/database';
 import Property, { IProperty } from '@/models/Property';
 
 const HomeProperties = async () => {
+  noStore();
   await connectDB();
 
   const recentProperties = await Property.find({})

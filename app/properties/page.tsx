@@ -2,6 +2,7 @@ import PropertyCard from '@/components/PropertyCard';
 import Property from '@/models/Property';
 import connectDB from '@/config/database';
 import { IProperty } from '@/models/Property';
+export const dynamic = 'force-dynamic';
 
 const PropertiesPage = async () => {
   await connectDB();
