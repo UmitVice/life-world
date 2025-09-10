@@ -5,8 +5,8 @@ import User from '@/models/User';
 export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId: process?.env?.Google_CLIENT_ID || '',
-      clientSecret: process?.env?.Google_CLIENT_SECRET || '',
+      clientId: process?.env?.Google_CLIENT_ID || process?.env?.GOOGLE_CLIENT_ID || '',
+      clientSecret: process?.env?.Google_CLIENT_SECRET || process?.env?.GOOGLE_CLIENT_SECRET || '',
       authorization: {
         params: {
           prompt: 'consent',
@@ -18,29 +18,38 @@ export const authOptions = {
   ],
   callbacks: {
     async signIn ({ profile }:any) {
-      await connectDB();
+      try {
+        await connectDB();
 
-      const userExit = await User?.findOne({ email: profile?.email });
+        const userExit = await User?.findOne({ email: profile?.email });
 
-      if (!userExit) {
-        const username = profile?.name?.slice(0, 20);
+        if (!userExit) {
+          const username = profile?.name?.slice(0, 20);
 
-        await User.create({
-          email: profile?.email,
-          username,
-          image: profile?.picture,
-        });
+          await User.create({
+            email: profile?.email,
+            username,
+            image: profile?.picture,
+          });
+        }
+
+        return true;
+      } catch (error) {
+        return false;
       }
-
-      return true;
     },
     
     async session ({ session}:any) {
-      const user = await User?.findOne({ email: session?.user?.email });
-
-      session.user.id = user?._id?.toString();
-
-      return session;
+      try {
+        await connectDB();
+        const user = await User?.findOne({ email: session?.user?.email });
+        if (user) {
+          (session as any).user.id = user?._id?.toString();
+        }
+        return session;
+      } catch (error) {
+        return session;
+      }
     },
   }
 }
