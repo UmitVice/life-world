@@ -11,15 +11,15 @@ export const metadata = {
 
 const MainLayout = ({ children }: MainLayoutProps)  => {
   return (
-    <AuthProvider>
-      <html lang='en'>
-        <body>
+    <html lang='en'>
+      <body>
+        <AuthProvider>
           <Navbar />
           <main>{children}</main>
           <Footer />
-        </body>
-      </html>
-    </AuthProvider>
+        </AuthProvider>
+      </body>
+    </html>
   )
 }
 
