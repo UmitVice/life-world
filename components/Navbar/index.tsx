@@ -2,8 +2,7 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { signIn, signOut, useSession, getProviders } from 'next-auth/react';
-import { FaGoogle } from 'react-icons/fa';
+import { signOut, useSession } from 'next-auth/react';
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -11,18 +10,11 @@ const Navbar = () => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [providers, setProviders] = useState(null);
+  // Auth providers temporarily disabled
 
   const pathname = usePathname();
 
-  useEffect(() => {
-    const setAuthProviders = async () => {
-      const res:any = await getProviders();
-      setProviders(res);
-    }
-
-    setAuthProviders();
-  }, []);
+  // Disabled fetching providers while Google Sign-In is turned off
   
   useEffect(() => {}, []);
 
@@ -102,23 +94,7 @@ const Navbar = () => {
           </div>
 
           {/* <!-- Right Side Menu (Loging or Register Button) --> */}
-          {!session && (
-            <div className='hidden md:block md:ml-6'>
-            <div className='flex items-center'>
-              {providers && 
-                Object?.values(providers)?.map((provider, index) => (
-                  <button 
-                    key={index}
-                    onClick={() => signIn((provider as any)?.id)}
-                    className='flex items-center text-white bg-emerald-600 hover:bg-emerald-700 rounded-md px-3 py-2 transition'
-                  >
-                    <FaGoogle className='fa-brands fa-google text-white mr-2' />
-                    <span>Login or Register</span>
-                  </button>
-              ))}
-            </div>
-          </div>
-          )}
+          {/* Sign-in button hidden temporarily */}
       
           {session && (
             <div className='absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0'>
@@ -253,21 +229,7 @@ const Navbar = () => {
                   </Link>
                 )}
 
-                {!session && (
-                 <div>
-                  {providers && 
-                    Object?.values(providers)?.map((provider, index) => (
-                      <button 
-                        key={index}
-                        onClick={ () => signIn((provider as any).id)}
-                        className='flex items-center text-white bg-emerald-600 hover:bg-emerald-700 rounded-md px-3 py-2 transition'
-                      >
-                        <FaGoogle className='fa-brands fa-google text-white mr-2' />
-                        <span>Login or Register</span>
-                      </button>
-                  ))}
-                 </div>
-                )}
+                {/* Sign-in button hidden temporarily */}
               </div>
             </div>
       )}
