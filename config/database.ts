@@ -1,22 +1,29 @@
 import mongoose from 'mongoose';
 
-let connected = false;
-
-const mongoDB_URI = process?.env?.MONGODB_URI as string;
+let isConnected = false;
 
 const connectDB = async () => {
     mongoose.set('strictQuery', true);
 
-    if (connected) {
-        console.log('Database is already connected');
+    if (isConnected) {
         return;
     }
 
+    const mongoDB_URI = process?.env?.MONGODB_URI;
+
+    if (!mongoDB_URI) {
+        throw new Error('Missing MONGODB_URI environment variable');
+    }
+
     try {
-        await mongoose.connect(mongoDB_URI);
-        connected = true;
+        await mongoose.connect(mongoDB_URI, {
+            serverSelectionTimeoutMS: 5000,
+            maxPoolSize: 10,
+        } as any);
+        isConnected = true;
     } catch (error) {
-        console.error(error);
+        isConnected = false;
+        throw error;
     }
 };
 
