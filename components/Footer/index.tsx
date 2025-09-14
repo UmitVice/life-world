@@ -4,34 +4,23 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-200 py-4 mt-24">
-      <div
-        className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4"
-      >
-        <div className="mb-4 md:mb-0">
-        </div>
-        <div
-          className="flex flex-wrap justify-center md:justify-start mb-4 md:mb-0"
-        >
-          <ul className="flex space-x-12">
+    <footer className="border-t border-slate-200 bg-white mt-24">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="text-slate-900 font-bold text-lg">Life World</div>
+          <ul className="flex items-center gap-6 text-slate-700">
             <li>
-                <Link href="/properties">Properties</Link>
+              <Link className="hover:text-slate-900" href="/properties">Properties</Link>
             </li>
             <li>
-                <Link href="/terms">Terms of Service</Link>
+              <Link className="hover:text-slate-900" href="/terms">Terms of Service</Link>
             </li>
           </ul>
-          
         </div>
-        
-        <div>
-      
-        </div>
-        
-      </div>
-      <p className="text-sm text-gray-500 md:my-4 text-center w-full">
-            &copy; {currentYear} Live World. Made by Umit Vice.
+        <p className="text-sm text-slate-500 mt-6 text-center">
+          &copy; {currentYear} Life World. Built by Umit Vice.
         </p>
+      </div>
     </footer>
   )
 }
