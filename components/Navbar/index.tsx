@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { signIn, signOut, useSession, getProviders } from 'next-auth/react';
-import { FaGoogle } from 'react-icons/fa';
+import { signOut, useSession } from 'next-auth/react';
+import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -11,23 +11,16 @@ const Navbar = () => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [providers, setProviders] = useState(null);
+  // Auth providers temporarily disabled
 
   const pathname = usePathname();
 
-  useEffect(() => {
-    const setAuthProviders = async () => {
-      const res:any = await getProviders();
-      setProviders(res);
-    }
-
-    setAuthProviders();
-  }, []);
+  // Disabled fetching providers while Google Sign-In is turned off
   
   useEffect(() => {}, []);
 
   return (
-    <nav className='bg-teal-800 border-b border-gray-300' >
+    <nav className='backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/60 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 transition-colors'>
       <div className='mx-auto max-w-8xl px-2 sm:px-6 lg:px-8'>
         <div className='relative flex h-16 items-center justify-between'>
           <div className='absolute inset-y-0 left-0 flex items-center md:hidden'>
@@ -63,8 +56,8 @@ const Navbar = () => {
           <div className='flex flex-1 items-center justify-center md:items-stretch md:justify-start'>
             {/* <!-- Logo --> */}
             <Link className='flex flex-shrink-0 items-center' href='/'>
-              <span className='hidden md:block text-white text-2xl font-bold ml-2'>
-              Life World
+              <span className='hidden md:block text-slate-900 dark:text-white text-2xl font-bold ml-2'>
+                Life World
               </span>
             </Link>
             {/* <!-- Desktop Menu Hidden below md screens --> */}
@@ -73,16 +66,16 @@ const Navbar = () => {
                 <Link
                   href='/'
                   className={`${
-                    pathname === '/' ? 'bg-emerald-500' : ''
-                  } text-white hover:bg-emerald-400 hover:text-white rounded-md px-3 py-2`}
+                    pathname === '/' ? 'bg-slate-900 text-white' : 'text-slate-700 dark:text-slate-200'
+                  } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
                 >
                   Home
                 </Link>
                 <Link
                   href='/properties'
                   className={`${
-                    pathname === '/properties' ? 'bg-emerald-500' : ''
-                  } text-white hover:bg-emerald-400 hover:text-white rounded-md px-3 py-2`}
+                    pathname === '/properties' ? 'bg-slate-900 text-white' : 'text-slate-700 dark:text-slate-200'
+                  } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
                 >
                   Properties
                 </Link>
@@ -90,8 +83,8 @@ const Navbar = () => {
                     <Link
                       href='/properties/add'
                       className={`${
-                        pathname === '/properties/add' ? 'bg-emerald-500' : ''
-                      } text-white hover:bg-emerald-400 hover:text-white rounded-md px-3 py-2`}
+                        pathname === '/properties/add' ? 'bg-slate-900 text-white' : 'text-slate-700 dark:text-slate-200'
+                      } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
                     >
                      Add Property
                     </Link>
@@ -102,32 +95,17 @@ const Navbar = () => {
           </div>
 
           {/* <!-- Right Side Menu (Loging or Register Button) --> */}
-          {!session && (
-            <div className='hidden md:block md:ml-6'>
-            <div className='flex items-center'>
-              {providers && 
-                Object?.values(providers)?.map((provider, index) => (
-                  <button 
-                    key={index}
-                    onClick={() => signIn((provider as any)?.id)}
-                    className='flex items-center text-white bg-gray-700 hover:bg-gray-900
-                    hover:text-white rounded-md px-3 py-2'
-                  >
-                    <FaGoogle className='fa-brands fa-google text-white mr-2' />
-                    <span>Login or Register</span>
-                  </button>
-              ))}
-            </div>
+          {/* Sign-in button hidden temporarily */}
+          <div className='hidden md:flex items-center gap-3'>
+            <ThemeToggle />
           </div>
-          )}
       
           {session && (
             <div className='absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0'>
             <Link href='messages' className='relative group'>
               <button
                 type='button'
-                className='relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2
-                 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800'
+                className='relative rounded-full bg-slate-200 dark:bg-slate-800 p-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500'
               >
             
                 <span className='sr-only'>View notifications</span>
@@ -180,8 +158,7 @@ const Navbar = () => {
               { isProfileMenuOpen && (
               <div
                 id='user-menu'
-                className='absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 
-                ring-black ring-opacity-5 focus:outline-none'
+                className='absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-white py-2 shadow-lg ring-1 ring-slate-200 focus:outline-none'
                 role='menu'
                 aria-orientation='vertical'
                 aria-labelledby='user-menu-button'
@@ -189,7 +166,7 @@ const Navbar = () => {
               >
                 <Link
                   href='/profile'
-                  className='block px-4 py-2 text-sm text-gray-700'
+                  className='block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50'
                   role='menuitem'
                   tabIndex={-1}
                   id='user-menu-item-0'
@@ -198,7 +175,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   href='/properties/saved'
-                  className='block px-4 py-2 text-sm text-gray-700'
+                  className='block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50'
                   role='menuitem'
                   tabIndex={-1}
                   id='user-menu-item-2'
@@ -206,7 +183,7 @@ const Navbar = () => {
                   Saved Properties
                 </Link>
                 <button
-                  className='block px-4 py-2 text-sm text-gray-700'
+                  className='block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 w-full text-left'
                   role='menuitem'
                   tabIndex={-1}
                   id='user-menu-item-2'
@@ -230,20 +207,19 @@ const Navbar = () => {
       { isMobileMenuOpen && (
               <div id='mobile-menu'>
               <div className='space-y-1 px-2 pb-3 pt-2'>
+                <div className='px-3 py-2'><ThemeToggle /></div>
                 <Link
                   href='/'
                   className={`${
-                    pathname === '/' ? 'bg-emerald-500 ' : ''
-                  } ' hover:bg-emerald-400 text-white block rounded-md px-3 py-2 text-base 
-                  font-medium'`}                >
+                    pathname === '/' ? 'bg-slate-900 text-white ' : 'text-slate-800 dark:text-slate-200'
+                  } ' hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'`}                >
                   Home
                 </Link>
                 <Link
                   href='/properties'
                   className={`${
-                    pathname === '/properties' ? 'bg-emerald-500 ' : ''
-                  } ' hover:bg-emerald-400 text-white  block rounded-md px-3 py-2 text-base 
-                  font-medium'`}     
+                    pathname === '/properties' ? 'bg-slate-900 text-white ' : 'text-slate-800 dark:text-slate-200'
+                  } ' hover:bg-slate-900/90 hover:text-white  block rounded-md px-3 py-2 text-base font-medium transition'`}     
                 >
                   Properties
                 </Link>
@@ -251,30 +227,14 @@ const Navbar = () => {
                   <Link
                     href='/properties/add'
                     className={`${
-                      pathname === '/properties/add' ? 'bg-emerald-500 ' : ''
-                    } ' hover:bg-emerald-400 text-white block rounded-md px-3 py-2 text-base 
-                    font-medium'`}
+                      pathname === '/properties/add' ? 'bg-slate-900 text-white ' : 'text-slate-800 dark:text-slate-200'
+                    } ' hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'`}
                   >
                   Add Property
                   </Link>
                 )}
 
-                {!session && (
-                 <div>
-                  {providers && 
-                    Object?.values(providers)?.map((provider, index) => (
-                      <button 
-                        key={index}
-                        onClick={ () => signIn((provider as any).id)}
-                        className='flex items-center text-white bg-gray-700 hover:bg-gray-900
-                        hover:text-white rounded-md px-3 py-2'
-                      >
-                        <FaGoogle className='fa-brands fa-google text-white mr-2' />
-                        <span>Login or Register</span>
-                      </button>
-                  ))}
-                 </div>
-                )}
+                {/* Sign-in button hidden temporarily */}
               </div>
             </div>
       )}

@@ -12,13 +12,13 @@ const PropertiesPage = async () => {
 
   return (
     <div>
-      <section className="px-4 py-6">
-      <h1 className="text-3xl container-xl lg:container m-auto px-4 py-2">Properties</h1>
-        <div className="container-xl lg:container m-auto px-4 py-6">
+      <section className="px-4 py-10">
+        <div className="container-xl lg:container m-auto">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 transition-colors">Properties</h1>
           {properties?.length === 0 ? (
-            <p>No properties found</p>
+            <p className="text-slate-600 dark:text-slate-300">No properties found</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {properties?.map((property) => (
                 <PropertyCard key={property?._id.toString()} property={property} />
               ))}

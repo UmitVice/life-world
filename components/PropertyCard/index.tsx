@@ -21,64 +21,46 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   };
 
   return (
-    <div className="rounded-xl shadow-md relative bg-sky-100">
-    <Image
-      src={property?.images?.[0] ? `/images/properties/${property?.images?.[0]}` : placeHolderImagePath}
-      alt=""
-      height={500}
-      width={500}
-      className="w-full h-auto rounded-t-xl"
-    />
-    <div className="p-2">
-      <div className="text-left md:text-center lg:text-left mb-6">
-        <div className="text-gray-600">{property?.type}</div>
-        <h3 className="text-xl font-bold">{property?.name}</h3>
+    <div className="group rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-emerald-400/40 dark:hover:ring-emerald-400/30">
+      <div className="relative aspect-[16/9] overflow-hidden">
+        <Image
+          src={property?.images?.[0] ? `/images/properties/${property?.images?.[0]}` : placeHolderImagePath}
+          alt=""
+          fill
+          className="object-cover group-hover:scale-[1.02] transition"
+          sizes="(min-width: 768px) 33vw, 100vw"
+        />
+        {getRentalRate() && (
+          <span className="absolute bottom-2.5 left-2.5 rounded-full bg-white/90 dark:bg-slate-800/80 backdrop-blur px-2.5 py-0.5 text-emerald-700 dark:text-emerald-400 text-xs font-semibold shadow-sm">
+            {getRentalRate()}
+          </span>
+        )}
       </div>
-      <h3
-        className="relative  bg-white px-4 py-2 rounded-lg text-green-500 font-bold md:text-center"
-      >
-        {getRentalRate()}
-      </h3>
-
-      <div className="flex justify-center gap-4 text-gray-500 mb-4">
-        <p>
-          <i className="fa-solid fa-bed"></i>{property?.beds} 
-          <span className="md:hidden lg:inline"> Beds</span>
-        </p>
-        <p>
-          <i className="fa-solid fa-bath"></i>{property?.baths}
-          <span className="md:hidden lg:inline"> Baths</span>
-        </p>
-        <p>
-          <i className="fa-solid fa-ruler-combined">{property?.square_feet}</i>
-          {property?.square_feet}<span className="md:hidden lg:inline"> sqft</span>
-        </p>
-      </div>
-
-      <div
-        className="flex justify-center gap-4 text-green-900 text-sm mb-4"
-      >
-        {property?.description}
-      </div>
-
-      <div className="border border-gray-100 mb-5"></div>
-
-      <div className="flex flex-col lg:flex-row justify-between mb-4">
-        <div className="flex align-middle gap-2 mb-4 lg:mb-0">
-          <i
-            className="fa-solid fa-location-dot text-lg text-orange-700"
-          ></i>
-          <span className="text-orange-700">{property?.location?.city}, {property?.location?.state}</span>
+      <div className="p-3">
+        <div className="mb-2">
+          <div className="text-slate-500 dark:text-slate-400 text-xs">{property?.type}</div>
+          <h3 className="text-base font-semibold text-slate-900 dark:text-white">{property?.name}</h3>
         </div>
-        <Link
-          href={`/properties/${property?._id}`}
-          className="h-[36px] bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-center text-sm"
-        >
-          Details
-        </Link>
+        <p className="text-slate-600 dark:text-slate-300 text-xs line-clamp-2 mb-2.5">{property?.description}</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5 text-slate-600 dark:text-slate-300 text-xs">
+            <span>{property?.beds} bd</span>
+            <span>{property?.baths} ba</span>
+            <span>{property?.square_feet} sqft</span>
+          </div>
+          <Link
+            href={`/properties/${property?._id}`}
+            className="inline-flex items-center rounded-lg bg-slate-900 text-white px-2.5 py-1.5 text-xs font-medium hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 transition"
+          >
+            Details
+          </Link>
+        </div>
+        <div className="mt-2.5 text-slate-500 dark:text-slate-300 text-xs flex items-center gap-2">
+          <i className="fa-solid fa-location-dot text-emerald-600"></i>
+          <span>{property?.location?.city}, {property?.location?.state}</span>
+        </div>
       </div>
     </div>
-  </div>
   )
 }
 
