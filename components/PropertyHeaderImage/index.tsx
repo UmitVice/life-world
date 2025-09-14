@@ -6,13 +6,13 @@ interface PropertyHeaderImageProps {
 
 const PropertyHeaderImage = ({ image }: PropertyHeaderImageProps) => {
   return (
-    <section>
+    <section className="relative">
       <div className='container-xl m-auto'>
         <div className='grid grid-cols-1'>
           <Image 
             src={`/images/properties/${image}`}
             alt=''
-            className='object-cover h-[400px] w-full'
+            className='object-cover h-[420px] w-full rounded-b-3xl'
             width={0}
             height={0}
             sizes='100vw'

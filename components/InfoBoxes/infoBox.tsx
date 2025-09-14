@@ -16,27 +16,26 @@ interface InfoBoxProps {
 }
 
 const InfoBox: React.FC<InfoBoxProps> = ({
-    backgroundColor = 'bg-green-600',
-    heading,
-    textColor = 'text-white',
-    buttonInfo,
-    children
+  backgroundColor = 'bg-white',
+  heading,
+  textColor = 'text-slate-700',
+  buttonInfo,
+  children,
 }) => {
   return (
-    <div className={`${backgroundColor} p-4 rounded-lg shadow-md`}>
-    <h2 className={`${textColor} text-2xl font-bold`}>{ heading }</h2>
-    <Link
-      href={buttonInfo.link}
-      className={` text-2xl font-bold inline-block rounded-lg px-2 py-2 my-2 text-white hover:text-yellow-200
-      hover:underline`}
-    >
-      {buttonInfo.text}
-    </Link>
-    <p className={`${textColor}`}>
-        {children}
-    </p>
+    <div className={`${backgroundColor} rounded-2xl border border-slate-200 shadow-sm p-6`}> 
+      {heading && (
+        <h2 className={`text-xl md:text-2xl font-semibold ${textColor}`}>{heading}</h2>
+      )}
+      <p className={`mt-3 text-slate-600`}>{children}</p>
+      <Link
+        href={buttonInfo.link}
+        className="inline-flex items-center mt-5 rounded-lg bg-emerald-600 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-700 transition"
+      >
+        {buttonInfo.text}
+      </Link>
     </div>
-  )
+  );
 }
 
 export default InfoBox;

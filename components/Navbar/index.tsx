@@ -27,7 +27,7 @@ const Navbar = () => {
   useEffect(() => {}, []);
 
   return (
-    <nav className='bg-teal-800 border-b border-gray-300' >
+    <nav className='backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/60 border-b border-slate-200 sticky top-0 z-40'>
       <div className='mx-auto max-w-8xl px-2 sm:px-6 lg:px-8'>
         <div className='relative flex h-16 items-center justify-between'>
           <div className='absolute inset-y-0 left-0 flex items-center md:hidden'>
@@ -63,8 +63,8 @@ const Navbar = () => {
           <div className='flex flex-1 items-center justify-center md:items-stretch md:justify-start'>
             {/* <!-- Logo --> */}
             <Link className='flex flex-shrink-0 items-center' href='/'>
-              <span className='hidden md:block text-white text-2xl font-bold ml-2'>
-              Life World
+              <span className='hidden md:block text-slate-900 text-2xl font-bold ml-2'>
+                Life World
               </span>
             </Link>
             {/* <!-- Desktop Menu Hidden below md screens --> */}
@@ -73,16 +73,16 @@ const Navbar = () => {
                 <Link
                   href='/'
                   className={`${
-                    pathname === '/' ? 'bg-emerald-500' : ''
-                  } text-white hover:bg-emerald-400 hover:text-white rounded-md px-3 py-2`}
+                    pathname === '/' ? 'bg-slate-900 text-white' : 'text-slate-700'
+                  } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
                 >
                   Home
                 </Link>
                 <Link
                   href='/properties'
                   className={`${
-                    pathname === '/properties' ? 'bg-emerald-500' : ''
-                  } text-white hover:bg-emerald-400 hover:text-white rounded-md px-3 py-2`}
+                    pathname === '/properties' ? 'bg-slate-900 text-white' : 'text-slate-700'
+                  } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
                 >
                   Properties
                 </Link>
@@ -90,8 +90,8 @@ const Navbar = () => {
                     <Link
                       href='/properties/add'
                       className={`${
-                        pathname === '/properties/add' ? 'bg-emerald-500' : ''
-                      } text-white hover:bg-emerald-400 hover:text-white rounded-md px-3 py-2`}
+                        pathname === '/properties/add' ? 'bg-slate-900 text-white' : 'text-slate-700'
+                      } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
                     >
                      Add Property
                     </Link>
@@ -110,8 +110,7 @@ const Navbar = () => {
                   <button 
                     key={index}
                     onClick={() => signIn((provider as any)?.id)}
-                    className='flex items-center text-white bg-gray-700 hover:bg-gray-900
-                    hover:text-white rounded-md px-3 py-2'
+                    className='flex items-center text-white bg-emerald-600 hover:bg-emerald-700 rounded-md px-3 py-2 transition'
                   >
                     <FaGoogle className='fa-brands fa-google text-white mr-2' />
                     <span>Login or Register</span>
@@ -126,8 +125,7 @@ const Navbar = () => {
             <Link href='messages' className='relative group'>
               <button
                 type='button'
-                className='relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2
-                 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800'
+                className='relative rounded-full bg-slate-200 p-1 text-slate-600 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500'
               >
             
                 <span className='sr-only'>View notifications</span>
@@ -180,8 +178,7 @@ const Navbar = () => {
               { isProfileMenuOpen && (
               <div
                 id='user-menu'
-                className='absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 
-                ring-black ring-opacity-5 focus:outline-none'
+                className='absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-white py-2 shadow-lg ring-1 ring-slate-200 focus:outline-none'
                 role='menu'
                 aria-orientation='vertical'
                 aria-labelledby='user-menu-button'
@@ -189,7 +186,7 @@ const Navbar = () => {
               >
                 <Link
                   href='/profile'
-                  className='block px-4 py-2 text-sm text-gray-700'
+                  className='block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50'
                   role='menuitem'
                   tabIndex={-1}
                   id='user-menu-item-0'
@@ -198,7 +195,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   href='/properties/saved'
-                  className='block px-4 py-2 text-sm text-gray-700'
+                  className='block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50'
                   role='menuitem'
                   tabIndex={-1}
                   id='user-menu-item-2'
@@ -206,7 +203,7 @@ const Navbar = () => {
                   Saved Properties
                 </Link>
                 <button
-                  className='block px-4 py-2 text-sm text-gray-700'
+                  className='block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 w-full text-left'
                   role='menuitem'
                   tabIndex={-1}
                   id='user-menu-item-2'
@@ -233,17 +230,15 @@ const Navbar = () => {
                 <Link
                   href='/'
                   className={`${
-                    pathname === '/' ? 'bg-emerald-500 ' : ''
-                  } ' hover:bg-emerald-400 text-white block rounded-md px-3 py-2 text-base 
-                  font-medium'`}                >
+                    pathname === '/' ? 'bg-slate-900 text-white ' : 'text-slate-800'
+                  } ' hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'`}                >
                   Home
                 </Link>
                 <Link
                   href='/properties'
                   className={`${
-                    pathname === '/properties' ? 'bg-emerald-500 ' : ''
-                  } ' hover:bg-emerald-400 text-white  block rounded-md px-3 py-2 text-base 
-                  font-medium'`}     
+                    pathname === '/properties' ? 'bg-slate-900 text-white ' : 'text-slate-800'
+                  } ' hover:bg-slate-900/90 hover:text-white  block rounded-md px-3 py-2 text-base font-medium transition'`}     
                 >
                   Properties
                 </Link>
@@ -251,9 +246,8 @@ const Navbar = () => {
                   <Link
                     href='/properties/add'
                     className={`${
-                      pathname === '/properties/add' ? 'bg-emerald-500 ' : ''
-                    } ' hover:bg-emerald-400 text-white block rounded-md px-3 py-2 text-base 
-                    font-medium'`}
+                      pathname === '/properties/add' ? 'bg-slate-900 text-white ' : 'text-slate-800'
+                    } ' hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'`}
                   >
                   Add Property
                   </Link>
@@ -266,8 +260,7 @@ const Navbar = () => {
                       <button 
                         key={index}
                         onClick={ () => signIn((provider as any).id)}
-                        className='flex items-center text-white bg-gray-700 hover:bg-gray-900
-                        hover:text-white rounded-md px-3 py-2'
+                        className='flex items-center text-white bg-emerald-600 hover:bg-emerald-700 rounded-md px-3 py-2 transition'
                       >
                         <FaGoogle className='fa-brands fa-google text-white mr-2' />
                         <span>Login or Register</span>
