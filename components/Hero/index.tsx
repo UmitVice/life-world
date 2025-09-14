@@ -1,7 +1,7 @@
 const Hero = () => {
   return (
     <>
-      <section className="relative bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-20">
+      <section className="relative bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white">

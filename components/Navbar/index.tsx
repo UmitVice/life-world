@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
+import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -19,7 +20,7 @@ const Navbar = () => {
   useEffect(() => {}, []);
 
   return (
-    <nav className='backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/60 border-b border-slate-200 sticky top-0 z-40'>
+    <nav className='backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/60 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 transition-colors'>
       <div className='mx-auto max-w-8xl px-2 sm:px-6 lg:px-8'>
         <div className='relative flex h-16 items-center justify-between'>
           <div className='absolute inset-y-0 left-0 flex items-center md:hidden'>
@@ -55,7 +56,7 @@ const Navbar = () => {
           <div className='flex flex-1 items-center justify-center md:items-stretch md:justify-start'>
             {/* <!-- Logo --> */}
             <Link className='flex flex-shrink-0 items-center' href='/'>
-              <span className='hidden md:block text-slate-900 text-2xl font-bold ml-2'>
+              <span className='hidden md:block text-slate-900 dark:text-white text-2xl font-bold ml-2'>
                 Life World
               </span>
             </Link>
@@ -65,7 +66,7 @@ const Navbar = () => {
                 <Link
                   href='/'
                   className={`${
-                    pathname === '/' ? 'bg-slate-900 text-white' : 'text-slate-700'
+                    pathname === '/' ? 'bg-slate-900 text-white' : 'text-slate-700 dark:text-slate-200'
                   } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
                 >
                   Home
@@ -73,7 +74,7 @@ const Navbar = () => {
                 <Link
                   href='/properties'
                   className={`${
-                    pathname === '/properties' ? 'bg-slate-900 text-white' : 'text-slate-700'
+                    pathname === '/properties' ? 'bg-slate-900 text-white' : 'text-slate-700 dark:text-slate-200'
                   } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
                 >
                   Properties
@@ -82,7 +83,7 @@ const Navbar = () => {
                     <Link
                       href='/properties/add'
                       className={`${
-                        pathname === '/properties/add' ? 'bg-slate-900 text-white' : 'text-slate-700'
+                        pathname === '/properties/add' ? 'bg-slate-900 text-white' : 'text-slate-700 dark:text-slate-200'
                       } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
                     >
                      Add Property
@@ -95,13 +96,16 @@ const Navbar = () => {
 
           {/* <!-- Right Side Menu (Loging or Register Button) --> */}
           {/* Sign-in button hidden temporarily */}
+          <div className='hidden md:flex items-center gap-3'>
+            <ThemeToggle />
+          </div>
       
           {session && (
             <div className='absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0'>
             <Link href='messages' className='relative group'>
               <button
                 type='button'
-                className='relative rounded-full bg-slate-200 p-1 text-slate-600 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500'
+                className='relative rounded-full bg-slate-200 dark:bg-slate-800 p-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500'
               >
             
                 <span className='sr-only'>View notifications</span>
@@ -203,17 +207,18 @@ const Navbar = () => {
       { isMobileMenuOpen && (
               <div id='mobile-menu'>
               <div className='space-y-1 px-2 pb-3 pt-2'>
+                <div className='px-3 py-2'><ThemeToggle /></div>
                 <Link
                   href='/'
                   className={`${
-                    pathname === '/' ? 'bg-slate-900 text-white ' : 'text-slate-800'
+                    pathname === '/' ? 'bg-slate-900 text-white ' : 'text-slate-800 dark:text-slate-200'
                   } ' hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'`}                >
                   Home
                 </Link>
                 <Link
                   href='/properties'
                   className={`${
-                    pathname === '/properties' ? 'bg-slate-900 text-white ' : 'text-slate-800'
+                    pathname === '/properties' ? 'bg-slate-900 text-white ' : 'text-slate-800 dark:text-slate-200'
                   } ' hover:bg-slate-900/90 hover:text-white  block rounded-md px-3 py-2 text-base font-medium transition'`}     
                 >
                   Properties
@@ -222,7 +227,7 @@ const Navbar = () => {
                   <Link
                     href='/properties/add'
                     className={`${
-                      pathname === '/properties/add' ? 'bg-slate-900 text-white ' : 'text-slate-800'
+                      pathname === '/properties/add' ? 'bg-slate-900 text-white ' : 'text-slate-800 dark:text-slate-200'
                     } ' hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'`}
                   >
                   Add Property

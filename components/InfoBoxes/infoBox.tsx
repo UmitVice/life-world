@@ -23,7 +23,7 @@ const InfoBox: React.FC<InfoBoxProps> = ({
   children,
 }) => {
   return (
-    <div className={`${backgroundColor} rounded-2xl border border-slate-200 shadow-sm p-6`}> 
+    <div className={`${backgroundColor} rounded-2xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 shadow-sm p-6 transition-colors`}> 
       {heading && (
         <h2 className={`text-xl md:text-2xl font-semibold ${textColor}`}>{heading}</h2>
       )}

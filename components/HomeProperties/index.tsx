@@ -15,7 +15,7 @@ const HomeProperties = async () => {
 
   return (
     <>
-    <section className="px-4 py-12 bg-slate-50">
+    <section className="px-4 py-12 bg-slate-50 dark:bg-slate-950 transition-colors">
     <div className="container-xl lg:container m-auto">
       <h2 className="text-3xl font-bold text-slate-900 mb-6 text-center">
         Recently Added

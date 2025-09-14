@@ -4,5 +4,5 @@
 
 /* App shell tweaks */
 body {
-  @apply bg-white text-slate-900 antialiased;
+  @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased transition-colors duration-300;
 }
