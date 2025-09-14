@@ -40,19 +40,16 @@ export const authOptions = {
     },
     
     async session ({ session}:any) {
-      const email = session?.user?.email;
-      if (!email) return session;
-
       try {
         await connectDB();
-        const user = await User?.findOne({ email });
+        const user = await User?.findOne({ email: session?.user?.email });
         if (user) {
           (session as any).user.id = user?._id?.toString();
         }
+        return session;
       } catch (error) {
-        // ignore lookup errors to avoid breaking public pages
+        return session;
       }
-      return session;
     },
   }
 }
