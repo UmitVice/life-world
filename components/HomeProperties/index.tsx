@@ -6,12 +6,16 @@ import Property, { IProperty } from '@/models/Property';
 
 const HomeProperties = async () => {
   noStore();
-  await connectDB();
-
-  const recentProperties = await Property.find({})
-    .sort({ createdAt: -1 })
-    .limit(3)
-    .lean<IProperty[]>();
+  let recentProperties: IProperty[] = [];
+  try {
+    await connectDB();
+    recentProperties = await Property.find({})
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .lean<IProperty[]>();
+  } catch (error) {
+    // swallow to prevent server error crashing page; render empty state below
+  }
 
   return (
     <>
