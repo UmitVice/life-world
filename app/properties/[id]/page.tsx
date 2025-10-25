@@ -14,8 +14,13 @@ interface PropertyPageProps {
 }
 
 const PropertyPage = async ({ params }: PropertyPageProps) => {
-  await connectDB();
-  const property = await Property.findById(params?.id).lean() as IProperty | null;
+  let property: IProperty | null = null;
+  try {
+    await connectDB();
+    property = await Property.findById(params?.id).lean() as IProperty | null;
+  } catch (error) {
+    // fall back to not found state below
+  }
     return (
       <>
       <PropertyHeaderImage image={property?.images?.[0]} />

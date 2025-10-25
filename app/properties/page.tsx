@@ -5,10 +5,13 @@ import { IProperty } from '@/models/Property';
 export const dynamic = 'force-dynamic';
 
 const PropertiesPage = async () => {
-  await connectDB();
-
-  const properties: IProperty[] = await Property.find({})
-    .lean<IProperty[]>();
+  let properties: IProperty[] = [] as any;
+  try {
+    await connectDB();
+    properties = await Property.find({}).lean<IProperty[]>();
+  } catch (error) {
+    // render empty state below if DB is unavailable
+  }
 
   return (
     <div>
