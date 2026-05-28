@@ -113,7 +113,8 @@ const propertySchema = new Schema<IProperty>({
     virtuals: true,
     transform: (doc, ret) => {
       ret._id = ret._id.toString();
-      delete ret.__v;
+      // cast to any to allow deleting mongoose internal fields without TS errors
+      delete (ret as any).__v;
       return ret;
     }
   }

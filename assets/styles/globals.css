@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 /* App shell tweaks */
+/* App shell tweaks */
+/* Keep globals minimal to avoid @apply resolution issues during Turbopack build.
+   Body classes are applied in the root layout to ensure Tailwind utilities are
+   available at runtime. */
+html, body {
+  height: 100%;
+}
 body {
-  @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased transition-colors duration-300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

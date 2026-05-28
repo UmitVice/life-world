@@ -12,7 +12,7 @@ export const metadata = {
 const MainLayout = ({ children }: MainLayoutProps)  => {
   return (
     <html lang='en'>
-      <body>
+      <body className="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased transition-colors duration-300">
         <AuthProvider>
           <Navbar />
           <main>{children}</main>
