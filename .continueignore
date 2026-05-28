@@ -1,0 +1,24 @@
+# Dependency folders
+node_modules/
+yarn.lock
+vendor/
+
+# Build and log files
+dist/
+build/
+coverage/
+*.log
+
+# IDE and Editor configurations
+.idea/
+.vscode/
+.history/
+*.swp
+
+# Environment variables and secrets
+.env
+.env.local
+
+# Project-specific caches or temporary files
+.cache/
+temp/
