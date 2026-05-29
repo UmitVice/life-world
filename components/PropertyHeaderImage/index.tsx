@@ -6,18 +6,19 @@ interface PropertyHeaderImageProps {
 
 const PropertyHeaderImage = ({ image }: PropertyHeaderImageProps) => {
   return (
-    <section className="relative">
+    <section className="relative overflow-hidden">
       <div className='container-xl m-auto'>
-        <div className='grid grid-cols-1'>
-          <Image 
+        <div className='relative w-full h-[420px]'>
+          <Image
             src={`/images/properties/${image}`}
             alt=''
-            className='object-cover h-[420px] w-full rounded-b-3xl'
-            width={0}
-            height={0}
+            className='object-cover rounded-b-3xl'
+            fill
             sizes='100vw'
+            priority
+            loading='eager'
           />
-        </div>        
+        </div>
       </div>
     </section>
   )

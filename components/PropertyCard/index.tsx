@@ -28,6 +28,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           alt=""
           fill
           className="object-cover group-hover:scale-[1.02] transition"
+          loading={property?.is_featured ? 'eager' : 'lazy'}
           sizes="(min-width: 768px) 33vw, 100vw"
         />
         {getRentalRate() && (
