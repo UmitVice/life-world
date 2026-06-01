@@ -9,6 +9,10 @@ export const metadata = {
   keywords: 'buy property, buy home, sell home, sell propert, rent home, rental property',
 };
 
+type MainLayoutProps = {
+  children: React.ReactNode;
+}
+
 const MainLayout = ({ children }: MainLayoutProps)  => {
   return (
     <html lang='en'>
@@ -21,10 +25,6 @@ const MainLayout = ({ children }: MainLayoutProps)  => {
       </body>
     </html>
   )
-}
-
-type MainLayoutProps = {
-  children: React.ReactNode;
 }
 
 export default MainLayout;

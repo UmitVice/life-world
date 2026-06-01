@@ -4,28 +4,29 @@ import { useEffect, useState } from 'react';
 const ThemeToggle = () => {
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     const stored = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const enableDark = stored ? stored === 'dark' : prefersDark;
+    const enableDark = (stored !== null ? stored === 'dark' : prefersDark);
     setIsDark(enableDark);
-    setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
     const root = document.documentElement;
-    if (isDark) {
+    if (mounted) {
+      if (isDark) {
       root.classList.add('dark');
       localStorage.setItem('theme', 'dark');
     } else {
       root.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
-  }, [isDark, mounted]);
+    }
+  }, [isDark]); // Sadece isDark değiştiğinde çalışsın
 
-  if (!mounted) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <button
@@ -52,5 +53,7 @@ const ThemeToggle = () => {
 };
 
 export default ThemeToggle;
+
+
 
 
