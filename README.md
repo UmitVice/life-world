@@ -226,7 +226,7 @@ This project is licensed under the **MIT License**.
 
 Have questions or suggestions?
 - GitHub Issues: https://github.com/UmitVice/life-world/issues
-- Email: contact@lifeworld.com
+- Email: umitvice@gmail.com
 
 ---
 
