@@ -1,4 +1,4 @@
-import InfoBox from "./infoBox";
+import InfoBox from './infoBox';
 
 const InfoBoxes = () => {
   return (
@@ -27,6 +27,6 @@ const InfoBoxes = () => {
       </div>
     </section>
   );
-}
+};
 
 export default InfoBoxes;
