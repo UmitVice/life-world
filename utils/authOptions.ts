@@ -61,7 +61,9 @@ export const authOptions = {
         }
         return null;
       } catch (error) {
-        console.error("Session verification error
+        console.error("Session verification error");
+        return false;
+      }
     },
   }
 }
