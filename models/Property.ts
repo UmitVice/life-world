@@ -121,7 +121,14 @@ const propertySchema = new Schema<IProperty>({
 });
 
 propertySchema.virtual('location.formattedAddress').get(function(this: IProperty) {
-  return `${this.location.street}, ${this.location.city}, ${this.location.state} ${this.location.zipcode}`;
+  const { street, city, state, zipcode } = this.location || {};
+  const parts = [];
+  if (street) parts.push(street);
+  if (city) parts.push(city);
+  if (state) parts.push(state);
+  if (zipcode) parts.push(zipcode);
+
+  return parts.length > 0 ? parts.join(', ') : 'No address provided';
 });
 
 const Property = models.Property || model<IProperty>('Property', propertySchema);

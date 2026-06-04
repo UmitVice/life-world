@@ -23,15 +23,27 @@ export const authOptions = {
 
         const userExit = await User?.findOne({ email: profile?.email });
 
-        if (!userExit) {
-          const username = profile?.name?.slice(0, 20);
+         if (!userExit) {
+           let username = profile?.name?.trim().slice(0, 20) || "user";
+           let isTaken = false;
+           let counter = 1;
 
-          await User.create({
-            email: profile?.email,
-            username,
-            image: profile?.picture,
-          });
-        }
+           while (isTaken) {
+             const existingUser = await User.findOne({ username });
+             if (existingUser) {
+               username = `${username.slice(0, 18)}${counter}`;
+               counter++;
+             } else {
+               isTaken = false;
+             }
+           }
+
+           await User.create({
+             email: profile?.email,
+             username,
+             image: profile?.picture,
+           });
+         }
 
         return true;
       } catch (error) {
@@ -45,11 +57,11 @@ export const authOptions = {
         const user = await User?.findOne({ email: session?.user?.email });
         if (user) {
           (session as any).user.id = user?._id?.toString();
+          return session;
         }
-        return session;
+        return null;
       } catch (error) {
-        return session;
-      }
+        console.error("Session verification error
     },
   }
 }
