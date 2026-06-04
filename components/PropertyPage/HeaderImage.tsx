@@ -1,22 +1,14 @@
-import Image from 'next/image';
+import { PropertyImage } from '../PropertyImage';
 
-interface HeaderImageProps {
-  image?: string;
-}
-
-const HeaderImage = ({ image }: HeaderImageProps) => {
+const HeaderImage = ({ image }: { image?: string }) => {
   return (
     <section className="relative overflow-hidden">
       <div className='container-xl m-auto'>
         <div className='relative w-full h-[420px]'>
-          <Image
-            src={`/images/properties/${image}`}
+          <PropertyImage 
+            image={image} 
+            priority 
             alt=''
-            className='object-cover rounded-b-3xl'
-            fill
-            sizes='100vw'
-            priority
-            loading='eager'
           />
         </div>
       </div>
