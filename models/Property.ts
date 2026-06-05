@@ -11,6 +11,10 @@ export interface IProperty {
     city?: string;
     state?: string;
     zipcode?: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
   };
   beds: number;
   baths: number;
@@ -28,8 +32,12 @@ export interface IProperty {
   };
   images: string[];
   is_featured: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  /**
+   * Timestamps are Date on the server, but they become ISO strings after
+   * serialization for client components. Use a union to model both forms.
+   */
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 const propertySchema = new Schema<IProperty>({
@@ -57,7 +65,11 @@ const propertySchema = new Schema<IProperty>({
     street: { type: String, trim: true },
     city: { type: String, trim: true },
     state: { type: String, trim: true },
-    zipcode: { type: String, trim: true }
+    zipcode: { type: String, trim: true },
+    coordinates: {
+      lat: { type: Number },
+      lng: { type: Number }
+    }
   },
   beds: {
     type: Number,

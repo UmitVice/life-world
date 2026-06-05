@@ -1,4 +1,6 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState } from 'react';
 import Link from "next/link";
 import { IProperty } from '@/models/Property';
 
@@ -7,15 +9,21 @@ interface PropertyCardProps {
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
-  const placeHolderImagePath = '/images/placeholder.jpg';
+  // Local fallback: avoid external URLs (no Image Optimization issues)
+  const fallbackImagePath = '/images/placeholder.jpg';
+
+  const [imgSrc, setImgSrc] = useState<string>(
+    property?.images?.[0] ? `/images/properties/${property.images[0]}` : fallbackImagePath
+  );
+
   const getRentalRate = (): string => {
     const { rates } = property;
     if (rates?.monthly) {
-      return `$${rates?.monthly?.toLocaleString()}/mo`;
+      return `$${rates.monthly.toLocaleString()}/mo`;
     } else if (rates?.weekly) {
-      return `$${rates?.weekly?.toLocaleString()}/wk`;
+      return `$${rates.weekly.toLocaleString()}/wk`;
     } else if (rates?.nightly) {
-      return `$${rates?.nightly?.toLocaleString()}/ni`;
+      return `$${rates.nightly.toLocaleString()}/ni`;
     }
     return '';
   };
@@ -23,13 +31,20 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   return (
     <div className="group rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-emerald-400/40 dark:hover:ring-emerald-400/30">
       <div className="relative aspect-[16/9] overflow-hidden">
-        <Image
-          src={property?.images?.[0] ? `/images/properties/${property?.images?.[0]}` : placeHolderImagePath}
-          alt=""
-          fill
-          className="object-cover group-hover:scale-[1.02] transition"
+        {/*
+          We use a plain <img> instead of next/image's `fill` mode.
+          Reason: `next/image fill` generates different style attribute
+          serializations between SSR ("0px") and CSR (0), which triggers
+          a React hydration mismatch. The underlying files are static
+          assets under /public, so Next.js image optimization is not
+          needed here.
+        */}
+        <img
+          src={imgSrc}
+          alt={property?.name || 'Property image'}
           loading={property?.is_featured ? 'eager' : 'lazy'}
-          sizes="(min-width: 768px) 33vw, 100vw"
+          className="absolute inset-0 h-full w-full object-cover group-hover:scale-[1.02] transition"
+          onError={() => setImgSrc(fallbackImagePath)}
         />
         {getRentalRate() && (
           <span className="absolute bottom-2.5 left-2.5 rounded-full bg-white/90 dark:bg-slate-800/80 backdrop-blur px-2.5 py-0.5 text-emerald-700 dark:text-emerald-400 text-xs font-semibold shadow-sm">
@@ -62,7 +77,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default PropertyCard;

@@ -3,16 +3,20 @@ import { unstable_noStore as noStore } from 'next/cache';
 import PropertyCard from '@/components/PropertyCard';
 import connectDB from '@/config/database';
 import Property, { IProperty } from '@/models/Property';
+import { serializeProperties } from '@/utils/serializeProperty';
 
 const HomeProperties = async () => {
   noStore();
   let recentProperties: IProperty[] = [];
   try {
     await connectDB();
-    recentProperties = await Property.find({})
+    const docs = await Property.find({})
       .sort({ createdAt: -1 })
       .limit(3)
       .lean<IProperty[]>();
+    // Serialize so Mongoose ObjectId/Date fields are plain values
+    // (required because PropertyCard is a Client Component).
+    recentProperties = serializeProperties(docs as IProperty[]);
   } catch (error) {
     // swallow to prevent server error crashing page; render empty state below
   }
