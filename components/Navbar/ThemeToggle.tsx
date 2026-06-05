@@ -1,36 +1,27 @@
 'use client';
+
 import { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
 
 const ThemeToggle = () => {
-  const [isDark, setIsDark] = useState(false);
+  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  // Avoid hydration mismatch by only rendering after component is mounted
   useEffect(() => {
-    const stored = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const enableDark = stored ? stored === 'dark' : prefersDark;
-    setIsDark(enableDark);
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDark, mounted]);
+  if (!mounted) {
+    return <div className="h-9 w-9" />; // Placeholder to prevent layout shift
+  }
 
-  if (!mounted) return null;
+  const isDark = theme === 'dark';
 
   return (
     <button
       aria-label="Toggle dark mode"
-      onClick={() => setIsDark((v) => !v)}
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-sm hover:shadow transition-all duration-300"
     >
       {/* Icon wrapper with cross-fade */}
@@ -52,5 +43,7 @@ const ThemeToggle = () => {
 };
 
 export default ThemeToggle;
+
+
 
 

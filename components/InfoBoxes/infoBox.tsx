@@ -1,41 +1,28 @@
 import React from 'react';
 import Link from 'next/link';
 
-interface ButtonInfo {
-  link: string;
-  backgroundColor?: string;
-  text: string;
-}
-
 interface InfoBoxProps {
-  backgroundColor?: string;
-  heading?: string;
-  textColor?: string;
-  buttonInfo: ButtonInfo;
+  heading: string;
+  buttonInfo: {
+    text: string;
+    link: string;
+  };
   children: React.ReactNode;
 }
 
-const InfoBox: React.FC<InfoBoxProps> = ({
-  backgroundColor = 'bg-white',
-  heading,
-  textColor = 'text-slate-700',
-  buttonInfo,
-  children,
-}) => {
+const InfoBox = ({ heading, buttonInfo, children }: InfoBoxProps) => {
   return (
-    <div className={`${backgroundColor} rounded-2xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 shadow-sm p-6 transition-colors`}> 
-      {heading && (
-        <h2 className={`text-xl md:text-2xl font-semibold ${textColor}`}>{heading}</h2>
-      )}
-      <p className={`mt-3 text-slate-600`}>{children}</p>
-      <Link
+    <div className="p-6 rounded-2xl bg-white shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+      <h3 className="text-xl font-bold mb-4">{heading}</h3>
+      <p className="text-gray-600 mb-6">{children}</p>
+      <Link 
         href={buttonInfo.link}
-        className="inline-flex items-center mt-5 rounded-lg bg-emerald-600 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-700 transition"
+        className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
       >
         {buttonInfo.text}
       </Link>
     </div>
   );
-}
+};
 
 export default InfoBox;

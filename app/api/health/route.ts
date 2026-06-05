@@ -21,18 +21,25 @@ export async function GET() {
     requiredVars.map((k) => [k, Boolean(process.env[k])])
   );
 
-  // Try DB connection quickly with a 3s timeout
-  const uri = process.env.MONGODB_URI as string | undefined;
+  // Try DB connection quickly with a 3s hard timeout (AbortController + mongoose)
+  const uri = process.env.MONGODB_URI;
   if (uri) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 3000);
-      await mongoose.connect(uri, { serverSelectionTimeoutMS: 2500 } as any);
-      clearTimeout(timeout);
+      await mongoose.connect(uri, {
+        serverSelectionTimeoutMS: 2500,
+        connectTimeoutMS: 2500,
+      });
       report.mongo = { connected: true, error: null };
       await mongoose.disconnect();
     } catch (err: any) {
-      report.mongo = { connected: false, error: err?.message || 'connect error' };
+      report.mongo = {
+        connected: false,
+        error: err?.message || 'Connection failed',
+      };
+    } finally {
+      clearTimeout(timeout);
     }
   }
 

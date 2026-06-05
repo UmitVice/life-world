@@ -36,7 +36,12 @@ const Navbar = () => {
             >
               <span className='absolute -inset-0.5'></span>
               <span className='sr-only'>Open main menu</span>
+              {/* suppressHydrationWarning disables React's hydration check
+                  for this SVG. Browser extensions such as Dark Reader
+                  inject inline attributes (data-darkreader-inline-*) at
+                  runtime, which otherwise triggers a hydration mismatch. */}
               <svg
+                suppressHydrationWarning
                 className='block h-6 w-6'
                 fill='none'
                 viewBox='0 0 24 24'
@@ -110,6 +115,7 @@ const Navbar = () => {
             
                 <span className='sr-only'>View notifications</span>
                 <svg
+                  suppressHydrationWarning
                   className='h-6 w-6'
                   fill='none'
                   viewBox='0 0 24 24'

@@ -3,6 +3,7 @@ import Property from '@/models/Property';
 import PropertyDetails from '@/components/PropertyDetails';
 import PropertyHeaderImage from '@/components/PropertyHeaderImage'
 import { IProperty } from '@/models/Property';
+import { serializeProperty } from '@/utils/serializeProperty';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -17,7 +18,9 @@ const PropertyPage = async ({ params }: PropertyPageProps) => {
   let property: IProperty | null = null;
   try {
     await connectDB();
-    property = await Property.findById(params?.id).lean() as IProperty | null;
+    const doc = await Property.findById(params?.id).lean();
+    // Serialize so Mongoose ObjectId/Date fields are plain values
+    property = doc ? serializeProperty(doc as unknown as IProperty) : null;
   } catch (error) {
     // fall back to not found state below
   }
@@ -26,10 +29,10 @@ const PropertyPage = async ({ params }: PropertyPageProps) => {
       <PropertyHeaderImage image={property?.images?.[0]} />
       <section>
         <div className='container m-auto py-6 px-6'>
-          <Link 
+          <Link
             href='/properties'
             className='text-gray-500 hover:text-gray-600 flex items-center'>
-          <Image 
+          <Image
             src='/images/icons/left-arrow.png'
             alt='Left Arrow'
             width={24}
