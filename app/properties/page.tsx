@@ -106,7 +106,7 @@ const PropertiesPage = async ({
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <main className="px-4 py-10">
-        <div className="container-xl lg:container m-auto">
+        <div className="max-w-[1600px] mx-auto">
           <header className="mb-8">
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white transition-colors">
               Properties
@@ -116,47 +116,58 @@ const PropertiesPage = async ({
             </p>
           </header>
 
-          <PropertyFilters />
+          {/*
+            Two-column layout on desktop (lg+): filters as a sticky left
+            sidebar, listings on the right. On smaller screens the filter
+            collapses to a full-width block above the listings.
+          */}
+          <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+            <aside className="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
+              <PropertyFilters />
+            </aside>
 
-          <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-400">
-                Results
-              </span>
-              <span className="text-xl font-bold text-slate-900 dark:text-white">
-                {total > 0
-                  ? `Showing ${startIndex}-${endIndex} of ${total} Properties`
-                  : '0 Properties Found'}
-              </span>
+            <div>
+              <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex flex-col">
+                  <span className="text-sm text-slate-500 dark:text-slate-400">
+                    Results
+                  </span>
+                  <span className="text-xl font-bold text-slate-900 dark:text-white">
+                    {total > 0
+                      ? `Showing ${startIndex}-${endIndex} of ${total} Properties`
+                      : '0 Properties Found'}
+                  </span>
+                </div>
+                <ViewToggle currentView={view} />
+              </div>
+
+              {properties.length === 0 ? (
+                <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                  <p className="text-xl text-slate-600 dark:text-slate-300">
+                    No properties found matching your filters.
+                  </p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                    Try adjusting or resetting the filters above.
+                  </p>
+                </div>
+              ) : view === 'list' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {properties.map((property) => (
+                    <PropertyCard
+                      key={property._id?.toString() ?? property.name}
+                      property={property}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <PropertyMap properties={properties} />
+              )}
+
+              {totalPages > 1 && (
+                <Pagination currentPage={currentPage} totalPages={totalPages} />
+              )}
             </div>
-            <ViewToggle currentView={view} />
           </div>
-
-          {properties.length === 0 ? (
-            <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-              <p className="text-xl text-slate-600 dark:text-slate-300">
-                No properties found matching your filters.
-              </p>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                Try adjusting or resetting the filters above.
-              </p>
-            </div>
-          ) : view === 'list' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {properties.map((property) => (
-                <PropertyCard
-                  key={property._id?.toString() ?? property.name}
-                  property={property}
-                />
-              ))}
-            </div>
-          ) : (
-            <PropertyMap properties={properties} />
-          )}
-
-          {totalPages > 1 && (
-            <Pagination currentPage={currentPage} totalPages={totalPages} />
-          )}
         </div>
       </main>
     </div>
