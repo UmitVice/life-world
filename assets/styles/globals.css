@@ -11,3 +11,89 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* ------------------------------------------------------------------ */
+/* Custom property map marker (L.divIcon)                              */
+/* ------------------------------------------------------------------ */
+/*
+ * The default Leaflet pin is replaced with a circular avatar that
+ * shows the property's first image plus a small always-visible label
+ * with the street address. The label is part of the icon (not a
+ * separate Leaflet tooltip) so it's visible without hover — that's
+ * what the user asked for on the listings map.
+ *
+ * `className` is intentionally left empty on the L.divIcon so Leaflet
+ * doesn't inject its own white-square background. The wrapper
+ * `.leaflet-marker-icon` class is added by Leaflet itself; we use
+ * descendant selectors scoped to `.custom-property-marker` so we
+ * don't leak styles to other Leaflet markers on the page.
+ */
+.custom-property-marker {
+  /* Reset Leaflet's default white box behind the icon. */
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-property-marker .marker-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: max-content;
+  /* The divIcon's iconSize controls the clickable area; we center
+     horizontally via translateX so the clickable spot matches the
+     visible avatar. */
+  transform: translateX(-50%);
+  left: 50%;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.custom-property-marker .marker-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  border: 3px solid #ffffff;
+  background-color: #e2e8f0; /* slate-200 fallback while image loads */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+}
+
+.custom-property-marker .marker-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+  display: block;
+}
+
+.custom-property-marker .marker-label {
+  margin-top: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 6px;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-property-marker .marker-stack:hover {
+  transform: translateX(-50%) scale(1.05);
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
+}
+
+/* When a marker is selected/clicked we add `is-active` to the
+ * wrapper so we can give it an emerald ring matching the rest of the
+ * site's accent color. The ring is added via JS in PropertyMap.
+ */
+.custom-property-marker.is-active .marker-avatar {
+  border-color: #10b981; /* emerald-500 */
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.35);
+}
