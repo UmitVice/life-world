@@ -6,8 +6,24 @@ import ViewToggle from '@/components/ViewToggle';
 import connectDB from '@/config/database';
 import Property, { IProperty } from '@/models/Property';
 import { serializeProperties } from '@/utils/serializeProperty';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
+
+// Per-page metadata for the listings route. Filter URLs are also
+// indexable, so we set a sensible default and let the search engines
+// dedupe via the existing `?view=` and filter params.
+export const metadata: Metadata = {
+  title: 'Browse Properties | Life World',
+  description:
+    'Explore curated rental and for-sale properties across the US. Filter by city, type, price, beds, and amenities.',
+  openGraph: {
+    title: 'Browse Properties | Life World',
+    description:
+      'Explore curated rental and for-sale properties across the US.',
+    type: 'website',
+  },
+};
 
 // Helper: safely converts searchParams value to a number
 const toInt = (v: string | string[] | undefined): number | undefined => {

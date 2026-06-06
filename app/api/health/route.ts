@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server';
+import connectDB from '@/config/database';
 import mongoose from 'mongoose';
 
 export async function GET() {
-  const report: Record<string, unknown> = {
-    runtime: 'edge-disabled',
-    node: process.version,
-    env: {},
-    mongo: { connected: false, error: null as null | string },
-  };
-
-  // Do not expose secrets; only presence/shape
+  // Do not expose secrets; only presence/shape.
   const requiredVars = [
     'MONGODB_URI',
     'GOOGLE_CLIENT_ID',
@@ -17,33 +11,36 @@ export async function GET() {
     'NEXTAUTH_URL',
     'NEXTAUTH_SECRET',
   ];
-  report.env = Object.fromEntries(
-    requiredVars.map((k) => [k, Boolean(process.env[k])])
+  const env = Object.fromEntries(
+    requiredVars.map((k) => [k, Boolean(process.env[k])]),
   );
 
-  // Try DB connection quickly with a 3s hard timeout (AbortController + mongoose)
-  const uri = process.env.MONGODB_URI;
-  if (uri) {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
-    try {
-      await mongoose.connect(uri, {
-        serverSelectionTimeoutMS: 2500,
-        connectTimeoutMS: 2500,
-      });
-      report.mongo = { connected: true, error: null };
-      await mongoose.disconnect();
-    } catch (err: any) {
-      report.mongo = {
-        connected: false,
-        error: err?.message || 'Connection failed',
-      };
-    } finally {
-      clearTimeout(timeout);
-    }
+  // Reuse the cached connection (singleton in config/database.ts)
+  // rather than connecting + disconnecting on every health hit, which
+  // would thrash the pool and hide connection issues under latency.
+  const report: Record<string, unknown> = {
+    runtime: 'node',
+    node: process.version,
+    env,
+    mongo: { connected: false, readyState: null as number | null, error: null as string | null },
+  };
+
+  try {
+    await connectDB();
+    // mongoose.connection.readyState: 0=disconnected, 1=connected, 2=connecting, 3=disconnecting
+    report.mongo = {
+      connected: mongoose.connection.readyState === 1,
+      readyState: mongoose.connection.readyState,
+      error: null,
+    };
+  } catch (err) {
+    report.mongo = {
+      connected: false,
+      readyState: mongoose.connection.readyState ?? null,
+      error: err instanceof Error ? err.message : 'Unknown connection error',
+    };
+    return NextResponse.json(report, { status: 503 });
   }
 
   return NextResponse.json(report, { status: 200 });
 }
-
-

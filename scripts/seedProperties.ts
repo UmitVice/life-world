@@ -38,6 +38,36 @@ const amenitiesList = [
 // Types allowed by the schema (must match the enum)
 const ALLOWED_TYPES = new Set<string>(propertyTypes);
 
+// Image pool. We have ~10 letters × 3-4 numbers = 35 distinct source
+// images. The seed pulls 3–5 unique images per property so the
+// gallery has something to scroll through. We guarantee the first
+// image is the "primary" one (used by PropertyCard / header) and
+// the rest are randomly chosen without replacement.
+const IMAGE_POOL = [
+  'a1.jpg', 'a2.jpg', 'a3.jpg', 'a4.jpg',
+  'b1.jpg', 'b2.jpg', 'b3.jpg',
+  'c1.jpg', 'c2.jpg', 'c3.jpg', 'c4.jpg',
+  'd1.jpg', 'd2.jpg', 'd3.jpg',
+  'e1.jpg', 'e2.jpg', 'e3.jpg', 'e4.jpg',
+  'f1.jpg', 'f2.jpg', 'f3.jpg',
+  'g1.jpg', 'g2.jpg', 'g3.jpg', 'g4.jpg',
+  'h1.jpg', 'h2.jpg', 'h3.jpg',
+  'i1.jpg', 'i2.jpg', 'i3.jpg',
+  'j1.jpg', 'j2.jpg', 'j3.jpg',
+  'v1.jpg',
+];
+
+/** Pick N unique random images from IMAGE_POOL. */
+const pickImages = (count: number): string[] => {
+  const pool = [...IMAGE_POOL];
+  // Fisher–Yates shuffle
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, Math.min(count, pool.length));
+};
+
 // Guarantees a given number of unique amenities (at least 1)
 const getUniqueAmenities = (count: number): string[] => {
   const picked = new Set<string>();
@@ -88,6 +118,11 @@ async function seed() {
 
         const amenities = getUniqueAmenities(getRandomInt(3, 6));
 
+        // 3–5 unique images per property. The first image is the
+        // "primary" (used by the listings card and the details
+        // header); the rest drive the lightbox gallery.
+        const images = pickImages(getRandomInt(3, 5));
+
         const property = {
           owner: dummyOwnerId,
           name: `${getRandomElement(['Modern', 'Luxury', 'Cozy', 'Urban', 'Rustic', 'Elite'])} ${type} #${i}`,
@@ -118,8 +153,7 @@ async function seed() {
             email: `broker${i}@life-world.example.com`,
             phone: `555-${getRandomInt(100, 999)}-${getRandomInt(1000, 9999)}`,
           },
-          // Cycle through existing property images (36 images available)
-          images: [`a${(i % 4) + 1}.jpg`],
+          images,
           is_featured: i % 12 === 0,
         };
 

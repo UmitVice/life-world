@@ -1,8 +1,12 @@
 'use client';
-import { SessionProvider } from 'next-auth/react'
-import { useEffect } from 'react';
+import { SessionProvider } from 'next-auth/react';
+import React, { useEffect } from 'react';
 
-const AuthProvider = ({ children }:any) => {
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+const AuthProvider = ({ children }: AuthProviderProps) => {
   // Prevent dark mode flash: set initial theme before paint
   useEffect(() => {
     const root = document.documentElement;
@@ -15,7 +19,7 @@ const AuthProvider = ({ children }:any) => {
     }
   }, []);
 
-  return <SessionProvider>{children}</SessionProvider>
-}
+  return <SessionProvider>{children}</SessionProvider>;
+};
 
 export default AuthProvider;

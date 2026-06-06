@@ -1,22 +1,52 @@
-import { IProperty } from "@/models/Property";
-import Image from 'next/image';
-import NotFound from '@/icons/not-found.png'
-import CheckMark from '@/icons/check.png'
+'use client';
+
+import { useState } from 'react';
+import { IProperty } from '@/models/Property';
+import NotFound from '@/icons/not-found.png';
+import CheckMark from '@/icons/check.png';
 import RateDisplay from './RateDisplay';
 import PropertyStats from './PropertyStats';
 import PropertyAmenities from './PropertyAmenities';
 import PropertyInfo from './PropertyInfo';
 import PropertyDescription from './PropertyDescription';
 import MapDisplay from './MapDisplay';
+import ImageGallery from './ImageGallery';
+import PropertyHeaderImage from '@/components/PropertyHeaderImage';
 
-interface PropertyDetails {
+interface PropertyDetailsProps {
   property: IProperty;
 }
 
-const PropertyDetails = ({ property }: PropertyDetails) => {
+const PropertyDetails = ({ property }: PropertyDetailsProps) => {
+  // Lightbox state. The header image (and any future thumbnail
+  // strip) opens the gallery at the clicked image's index.
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+
+  const openGallery = (index: number) => {
+    setGalleryIndex(index);
+    setGalleryOpen(true);
+  };
+
+  const images = property.images ?? [];
+
   return (
     <main>
-      {/* Property Title & Location */}
+      {/*
+        PropertyDetails is now a Client Component because the header
+        image is interactive (clicking opens the fullscreen gallery).
+        Event handlers can't cross the Server → Client Component
+        boundary, so the header is rendered inside this client tree
+        (rather than in the parent Server Component) so we can pass
+        `onImageClick` down.
+      */}
+
+      {/* Hero image — clickable, opens the gallery */}
+      <PropertyHeaderImage
+        image={images[0]}
+        onImageClick={() => openGallery(0)}
+      />
+
       <PropertyInfo property={property} />
 
       {/* Rates & Options */}
@@ -35,6 +65,14 @@ const PropertyDetails = ({ property }: PropertyDetails) => {
 
       {/* Map */}
       <MapDisplay property={property} />
+
+      {/* Fullscreen image gallery — controlled by the header click */}
+      <ImageGallery
+        images={images}
+        open={galleryOpen}
+        onClose={() => setGalleryOpen(false)}
+        initialIndex={galleryIndex}
+      />
     </main>
   );
 };

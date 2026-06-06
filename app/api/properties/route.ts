@@ -1,51 +1,52 @@
 import { NextResponse, NextRequest } from 'next/server';
 import connectDB from '@/config/database';
 import Property from '@/models/Property';
-
-// Helper: safely converts a query string value to a number
-const toInt = (value: string | null): number | undefined => {
-  if (value === null || value === '') return undefined;
-  const n = parseInt(value, 10);
-  return Number.isFinite(n) ? n : undefined;
-};
-
-const toFloat = (value: string | null): number | undefined => {
-  if (value === null || value === '') return undefined;
-  const n = Number(value);
-  return Number.isFinite(n) ? n : undefined;
-};
+import { propertyListQuerySchema } from '@/utils/validators';
 
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
 
+    // Build a plain object out of URLSearchParams so zod can validate it.
+    // Zod will coerce strings to numbers where appropriate.
     const { searchParams } = new URL(request.url);
+    const raw: Record<string, string> = {};
+    searchParams.forEach((v, k) => {
+      // When the same key appears multiple times, take the first one.
+      // The schema only accepts single strings for the relevant fields.
+      if (!(k in raw)) raw[k] = v;
+    });
 
-    // Parse query parameters safely
-    const type = searchParams.get('type');
-    const minBeds = toInt(searchParams.get('minBeds'));
-    const maxBeds = toInt(searchParams.get('maxBeds'));
-    const minSqFt = toInt(searchParams.get('minSqFt'));
-    const maxSqFt = toInt(searchParams.get('maxSqFt'));
-    const city = searchParams.get('city');
-    const minPrice = toFloat(searchParams.get('minPrice'));
-    const maxPrice = toFloat(searchParams.get('maxPrice'));
-    const amenitiesParam = searchParams.get('amenities');
-    const amenities = amenitiesParam
-      ? amenitiesParam.split(',').map((a) => a.trim()).filter(Boolean)
-      : undefined;
+    const parsed = propertyListQuerySchema.safeParse(raw);
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: 'Invalid query parameters',
+          details: parsed.error.flatten(),
+        },
+        { status: 400 },
+      );
+    }
 
-    // Pagination: default limit 50, max 100 (prevent abuse)
-    const page = Math.max(1, toInt(searchParams.get('page')) ?? 1);
-    const rawLimit = toInt(searchParams.get('limit')) ?? 50;
-    const limit = Math.min(100, Math.max(1, rawLimit));
+    const {
+      type,
+      city,
+      minBeds,
+      maxBeds,
+      minSqFt,
+      maxSqFt,
+      minPrice,
+      maxPrice,
+      amenities,
+      page = 1,
+      limit = 50,
+    } = parsed.data;
 
     // Dynamic query object — only add defined fields
     const query: Record<string, unknown> = {};
 
-    if (type) {
-      query.type = type;
-    }
+    if (type) query.type = type;
+    if (city) query['location.city'] = city;
 
     if (minBeds !== undefined || maxBeds !== undefined) {
       const beds: Record<string, number> = {};
@@ -59,10 +60,6 @@ export async function GET(request: NextRequest) {
       if (minSqFt !== undefined) sqft.$gte = minSqFt;
       if (maxSqFt !== undefined) sqft.$lte = maxSqFt;
       query.square_feet = sqft;
-    }
-
-    if (city) {
-      query['location.city'] = city;
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
