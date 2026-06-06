@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node --transpile-only scripts/seedProperties.ts",
-    "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\""
+    "seed": "node scripts/seed.cjs",
+    "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
+    "optimize-images": "node scripts/optimizeImages.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -37,6 +38,7 @@
     "postcss": "^8.5.15",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"

@@ -9,14 +9,36 @@ interface PropertyImageProps {
   className?: string;
 }
 
-const DEFAULT_IMAGE = '/images/placeholder.jpg'; // File that actually exists in /public
+const PLACEHOLDER_WEBP = '/images/placeholder.webp';
+const PLACEHOLDER_JPG = '/images/placeholder.jpg';
 
-const buildSrc = (image?: string): string => {
-  if (!image || image.trim() === '') return DEFAULT_IMAGE;
-  // If the image is already an absolute URL or a path that already starts with
-  // "/", don't prepend the local properties directory prefix.
-  if (/^(https?:)?\/\//i.test(image) || image.startsWith('/')) return image;
-  return `/images/properties/${image}`;
+const isImageFile = (s: string) => s.trim().length > 0;
+
+/**
+ * Build the URL for a property's marker avatar. The map markers
+ * live at 96×96 — small enough that we pre-generate them as
+ * `marker/<name>.webp` and fall back to the original `.jpg` if
+ * the optimized variant hasn't been generated yet (e.g. a new
+ * image was uploaded without re-running `yarn optimize-images`).
+ *
+ * Keeping the fallback means a stale build can't break the map
+ * — the worst case is "uses JPG, slightly larger" instead of
+ * "broken image".
+ */
+const buildSrc = (image?: string): { webp: string; fallback: string } => {
+  if (!isImageFile(image ?? '')) {
+    return { webp: PLACEHOLDER_WEBP, fallback: PLACEHOLDER_JPG };
+  }
+  if (/^(https?:)?\/\//i.test(image!) || image!.startsWith('/')) {
+    return { webp: image!, fallback: image! };
+  }
+  // The `image` value in seed is e.g. "a1.jpg". We strip the .jpg
+  // to get the base name and append `.webp`.
+  const baseName = image!.replace(/\.(jpe?g|png)$/i, '');
+  return {
+    webp: `/images/properties/marker/${baseName}.webp`,
+    fallback: `/images/properties/${image}`,
+  };
 };
 
 export const PropertyImage: React.FC<PropertyImageProps> = ({
@@ -25,32 +47,40 @@ export const PropertyImage: React.FC<PropertyImageProps> = ({
   priority = false,
   className = '',
 }) => {
-  const [imgSrc, setImgSrc] = useState<string>(buildSrc(image));
+  const sources = buildSrc(image);
+  // We start with the optimized webp; onError we fall back to the
+  // original jpg (or the original url if it was an absolute link).
+  const [src, setSrc] = useState<string>(sources.webp);
 
-  // If the `image` prop changes after mount, keep the local state in sync.
+  // If the `image` prop changes, re-derive the src.
   React.useEffect(() => {
-    setImgSrc(buildSrc(image));
+    setSrc(buildSrc(image).webp);
   }, [image]);
 
   return (
     <div className={`relative w-full h-full overflow-hidden ${className}`}>
       {/*
-        We use a plain <img> instead of next/image's `fill` mode.
-        Reason: `next/image fill` generates different style attribute
-        serializations between SSR ("0px") and CSR (0), which triggers
-        a React hydration mismatch. The underlying files are static
-        assets under /public, so Next.js image optimization is not
-        needed here. This also keeps the behavior consistent with
-        components/PropertyCard and avoids the /_next/image endpoint
-        in environments where it may fail.
+        Plain <img> (not next/image) — the underlying files are static
+        assets under /public and we already serve an optimized WebP
+        variant from the optimize-images script. next/image would
+        add a per-request processing round-trip on top of that.
+
+        The plain <img> also matches what the rest of the project
+        does for static thumbnails (PropertyCard), avoiding
+        hydration mismatches.
       */}
       <img
-        src={imgSrc}
+        src={src}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
         className="absolute inset-0 h-full w-full object-cover"
         onError={() => {
-          if (imgSrc !== DEFAULT_IMAGE) setImgSrc(DEFAULT_IMAGE);
+          // If the webp variant is missing, fall back to the
+          // original (jpg) or placeholder. We only fall back once
+          // to avoid an infinite loop if both fail.
+          if (src !== sources.fallback) {
+            setSrc(sources.fallback);
+          }
         }}
       />
     </div>

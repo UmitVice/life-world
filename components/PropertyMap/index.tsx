@@ -114,12 +114,20 @@ const MARKER_TOTAL_HEIGHT =
 // label without aiming at the avatar.
 const MARKER_WIDTH = 120;
 
+/**
+ * Build the marker avatar URL. We prefer the pre-generated 96×96 WebP
+ * under `marker/<name>.webp` (small, sharp on retina) and fall back
+ * to the original `.jpg` if the optimized variant is missing.
+ */
 const buildMarkerImageSrc = (property: IProperty): string => {
   const first = property.images?.[0];
-  if (!first) return '/images/placeholder.jpg';
+  if (!first) return '/images/properties/marker/placeholder.webp';
   // If the value is already an absolute URL or starts with `/`, use as-is.
   if (/^(https?:)?\/\//i.test(first) || first.startsWith('/')) return first;
-  return `/images/properties/${first}`;
+  // `image` in seed is e.g. "a1.jpg". Strip the extension and
+  // append .webp — the optimize-images script generates the variant.
+  const baseName = first.replace(/\.(jpe?g|png)$/i, '');
+  return `/images/properties/marker/${baseName}.webp`;
 };
 
 const buildAddressLabel = (property: IProperty): string => {
@@ -159,7 +167,10 @@ const createPropertyIcon = (
       property._id?.toString() ?? '',
     )}">
       <div class="marker-avatar" aria-hidden="true">
-        <img src="${escapeHtml(imageSrc)}" alt="${safeName}" loading="lazy" />
+        <img src="${escapeHtml(imageSrc)}" alt="${safeName}" loading="eager"
+             onerror="this.onerror=null;this.src='${escapeHtml(
+               imageSrc.replace('/marker/', '/').replace('.webp', '.jpg'),
+             )}'" />
       </div>
       ${
         safeAddress
