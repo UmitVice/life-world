@@ -42,4 +42,4 @@ next-env.d.ts
 
 # ad-hoc dev server log (created by `yarn dev > dev.log 2>&1`).
 # Safe to delete at any time; only kept to silence git status noise.
-dev.log
+dev*.log
