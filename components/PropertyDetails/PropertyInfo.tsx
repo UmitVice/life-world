@@ -1,6 +1,5 @@
 import { IProperty } from '@/models/Property';
-import Image from 'next/image';
-import LocationIcon from '@/icons/location.png';
+import { FaMapMarkerAlt } from 'react-icons/fa';
 
 interface PropertyInfoProps {
   property: IProperty;
@@ -13,13 +12,14 @@ const PropertyInfo = ({ property }: PropertyInfoProps) => {
         <div className="text-slate-500 dark:text-slate-400 text-sm mb-2">{property?.type}</div>
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">{property?.name}</h1>
         <div className="flex flex-col md:flex-row items-center md:items-start justify-center md:justify-start gap-2 md:gap-4 text-slate-600 dark:text-slate-300">
-          <Image 
-            src={LocationIcon} 
-            alt="Location" 
-            width={20} 
-            height={20} 
-            className="text-lg flex-shrink-0"
-          />
+          {/*
+            Using react-icons (FaMapMarkerAlt) instead of the missing
+            public/images/icons/location.png. Keeps the build green and
+            matches the rest of the project that already uses Font
+            Awesome classes (e.g. fa-solid fa-location-dot in
+            components/PropertyCard).
+          */}
+          <FaMapMarkerAlt className="text-emerald-600 text-lg flex-shrink-0" />
           <p className="text-sm text-center md:text-left">
             {property?.location?.street}, {property?.location?.city}, {property?.location?.zipcode}
           </p>
