@@ -39,6 +39,10 @@
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   },
+  "resolutions": {
+    "postcss": "^8.5.10",
+    "uuid": "^11.1.1"
+  },
   "engines": {
     "node": "22.x",
     "yarn": ">=1.22.0"
