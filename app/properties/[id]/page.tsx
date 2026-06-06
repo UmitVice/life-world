@@ -1,7 +1,6 @@
 import connectDB from '@/config/database';
 import Property from '@/models/Property';
 import PropertyDetails from '@/components/PropertyDetails';
-import PropertyHeaderImage from '@/components/PropertyHeaderImage';
 import { IProperty } from '@/models/Property';
 import { serializeProperty } from '@/utils/serializeProperty';
 import { objectIdSchema } from '@/utils/validators';
@@ -88,7 +87,12 @@ const PropertyPage = async ({ params }: PropertyPageProps) => {
 
   return (
     <>
-      <PropertyHeaderImage image={property.images?.[0]} />
+      {/*
+        The hero image used to be rendered here, but it's now
+        rendered inside <PropertyDetails /> (a Client Component) so
+        it can wire `onClick` → gallery without crossing the
+        Server → Client boundary.
+      */}
       <section>
         <div className="container m-auto py-6 px-6">
           <Link
@@ -108,14 +112,6 @@ const PropertyPage = async ({ params }: PropertyPageProps) => {
       </section>
       <section className="bg-slate-50">
         <div className="max-w-[1280px] mx-auto py-10 px-4 sm:px-6">
-          {/*
-            `md:grid-cols-70/30` was an invalid Tailwind class, so on
-            desktop the grid silently collapsed to a single full-width
-            column and the listing stretched edge-to-edge. With only one
-            child (`<PropertyDetails />`), the right column would have
-            been empty anyway, so we use a single centered container
-            capped at 1280px (matching the listings page).
-          */}
           <PropertyDetails property={property} />
         </div>
       </section>

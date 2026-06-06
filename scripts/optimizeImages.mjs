@@ -1,20 +1,26 @@
 // scripts/optimizeImages.mjs
 //
 // Reads every .jpg / .jpeg / .png under public/images/properties/ and
-// generates two WebP variants next to them:
+// generates three WebP variants next to them:
 //
-//   public/images/properties/marker/<name>.webp   96×96, q=80
-//     ↳ fed into the Leaflet divIcon. Small file size is critical
-//       because all markers on the listings page load at once.
+//   public/images/properties/marker/<name>.webp   96×96,  q=80
+//     ↳ fed into the Leaflet divIcon. Tiny file size (~3 KB) is
+//       critical because all markers on the listings page load at
+//       once.
 //
-//   public/images/properties/card/<name>.webp     400×300, q=80
-//     ↳ fed into PropertyCard. Crisp on retina, still well under
-//       30 KB.
+//   public/images/properties/card/<name>.webp     max-400w, q=80
+//     ↳ fed into PropertyCard's <Image>. Crisp on retina, still
+//       well under 30 KB.
+//
+//   public/images/properties/header/<name>.webp   1280w,  q=80
+//     ↳ fed into PropertyHeaderImage. The hero image on the
+//       property details page is rendered at 1280×420, so we need
+//       a 1280w variant to avoid upscaling/blurriness.
 //
 // Originals are kept (smaller `placeholder.jpg` can also be converted).
-// The marker-card fallback chain (see buildMarkerImageSrc and
-// PropertyImage) tries the new `.webp` first and falls back to the
-// original if missing.
+// The marker-card-header fallback chain (see buildMarkerImageSrc,
+// PropertyImage, PropertyHeaderImage) tries the new `.webp` first
+// and falls back to the original if missing.
 //
 // Usage:
 //   yarn optimize-images
@@ -31,9 +37,11 @@ const ROOT = path.resolve(__dirname, '..');
 const SRC_DIR = path.join(ROOT, 'public', 'images', 'properties');
 const MARKER_OUT = path.join(SRC_DIR, 'marker');
 const CARD_OUT = path.join(SRC_DIR, 'card');
+const HEADER_OUT = path.join(SRC_DIR, 'header');
 
 const MARKER_SIZE = 96;
 const CARD_SIZE = 400; // width (height auto-derived from aspect)
+const HEADER_SIZE = 1280; // width (height auto-derived from aspect)
 const QUALITY = 80;
 
 const SUPPORTED_EXT = new Set(['.jpg', '.jpeg', '.png']);
@@ -56,34 +64,42 @@ const processFile = async (file) => {
   const srcMeta = await sharp(srcBuffer).metadata();
 
   // ---- Marker variant (96×96, cover-cropped to a square) ----
-  const markerName = `${baseName}.webp`;
   await sharp(srcBuffer)
     .resize(MARKER_SIZE, MARKER_SIZE, {
       fit: 'cover',
-      position: 'attention', // smart crop for portraits/landscapes
+      position: 'attention',
     })
     .webp({ quality: QUALITY })
-    .toFile(path.join(MARKER_OUT, markerName));
+    .toFile(path.join(MARKER_OUT, `${baseName}.webp`));
 
   // ---- Card variant (responsive, max width 400) ----
-  const cardName = `${baseName}.webp`;
   const cardWidth = Math.min(CARD_SIZE, srcMeta.width ?? CARD_SIZE);
   await sharp(srcBuffer)
     .resize({ width: cardWidth, withoutEnlargement: true })
     .webp({ quality: QUALITY })
-    .toFile(path.join(CARD_OUT, cardName));
+    .toFile(path.join(CARD_OUT, `${baseName}.webp`));
 
-  const afterStat = await fs.stat(path.join(CARD_OUT, cardName));
+  // ---- Header variant (1280w, used by the property-details hero) ----
+  // We cap at the source image's natural width to avoid upscaling,
+  // and the file is roughly 5× the card variant.
+  const headerWidth = Math.min(HEADER_SIZE, srcMeta.width ?? HEADER_SIZE);
+  await sharp(srcBuffer)
+    .resize({ width: headerWidth, withoutEnlargement: true })
+    .webp({ quality: QUALITY })
+    .toFile(path.join(HEADER_OUT, `${baseName}.webp`));
+
+  const headerStat = await fs.stat(path.join(HEADER_OUT, `${baseName}.webp`));
   return {
     name: baseName,
     before: srcStat.size,
-    after: afterStat.size,
+    after: headerStat.size,
   };
 };
 
 const main = async () => {
   await ensureDir(MARKER_OUT);
   await ensureDir(CARD_OUT);
+  await ensureDir(HEADER_OUT);
 
   const entries = await fs.readdir(SRC_DIR);
   const imageFiles = entries.filter(isImageFile);
@@ -94,7 +110,7 @@ const main = async () => {
   }
 
   console.log(
-    `Optimizing ${imageFiles.length} image(s) → marker ${MARKER_SIZE}×${MARKER_SIZE}, card max ${CARD_SIZE}w @ q=${QUALITY}…`,
+    `Optimizing ${imageFiles.length} image(s) → marker ${MARKER_SIZE}×${MARKER_SIZE}, card max ${CARD_SIZE}w, header max ${HEADER_SIZE}w @ q=${QUALITY}…`,
   );
 
   let totalBefore = 0;
@@ -104,7 +120,7 @@ const main = async () => {
       const { name, before, after } = await processFile(file);
       totalBefore += before;
       totalAfter += after;
-      console.log(`  ✓ ${name}: ${fmtKb(before)} → ${fmtKb(after)}`);
+      console.log(`  ✓ ${name}: ${fmtKb(before)} → header ${fmtKb(after)}`);
     } catch (err) {
       console.error(`  ✗ ${file} failed:`, err);
     }
