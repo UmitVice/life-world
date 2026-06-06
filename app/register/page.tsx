@@ -27,19 +27,34 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // Register API call will be handled by backend
+      // 1) Create the user via the register API.
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, username, password }),
+      });
+
+      const data = (await res.json().catch(() => ({}))) as { message?: string };
+
+      if (!res.ok) {
+        setError(data?.message || 'Registration failed. Please try again.');
+        return;
+      }
+
+      // 2) Auto sign-in with credentials.
       const result = await signIn('credentials', {
         email,
         password,
-        username,
-        redirect: false
+        redirect: false,
       });
 
       if (result?.error) {
-        setError((result as any).error?.message || 'Registration failed. Please create account via API.');
-      } else {
+        setError('Account created, but sign-in failed. Please log in.');
         router.push('/login');
+        return;
       }
+
+      router.push('/');
     } catch {
       setError('An error occurred. Please try again.');
     } finally {

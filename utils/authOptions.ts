@@ -1,8 +1,10 @@
 import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import type { NextAuthOptions, Profile } from 'next-auth';
 import type { Session } from 'next-auth';
+import bcrypt from 'bcryptjs';
 import connectDB from '@/config/database';
-import User from '@/models/User';
+import User, { hashPassword } from '@/models/User';
 
 // Lightweight shape we actually use from the Google profile payload.
 // NextAuth's full Profile type is much wider; we only need a few fields.
@@ -29,9 +31,57 @@ export const authOptions: NextAuthOptions = {
         },
       },
     }),
+    CredentialsProvider({
+      name: 'credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Email and password are required');
+        }
+
+        await connectDB();
+        const user = await User.findOne({ email: credentials.email });
+
+        if (!user || !user.password) {
+          throw new Error('Invalid email or password');
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password,
+        );
+
+        if (!isPasswordValid) {
+          throw new Error('Invalid email or password');
+        }
+
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.username,
+          image: user.image,
+          username: user.username,
+        } as any;
+      },
+    }),
   ],
+  pages: {
+    signIn: '/login',
+  },
+  session: {
+    strategy: 'jwt',
+  },
   callbacks: {
-    async signIn({ profile }: { profile?: Profile }) {
+    async signIn({ profile, user, account }: { profile?: Profile; user?: any; account?: any }) {
+      // Credentials login: user already validated by authorize(); just accept.
+      if (account?.provider === 'credentials') {
+        return true;
+      }
+
+      // Google login: existing flow (auto-create user on first sign-in).
       if (!isGoogleProfile(profile) || !profile.email) {
         return false;
       }
@@ -66,16 +116,29 @@ export const authOptions: NextAuthOptions = {
       }
     },
 
-    async session({ session }: { session: Session }) {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = (user as any).id;
+        token.username = (user as any).username;
+      }
+      return token;
+    },
+
+    async session({ session, token }: { session: Session; token: any }) {
       try {
-        if (!session.user?.email) return session;
-        await connectDB();
-        const user = await User.findOne({ email: session.user.email });
-        if (user) {
-          // The augmentation in types/next-auth.d.ts gives us
-          // `session.user.id` and `session.user.username` with proper types.
-          session.user.id = user._id.toString();
-          session.user.username = user.username;
+        if (session.user) {
+          if (token?.id) session.user.id = token.id;
+          if (token?.username) session.user.username = token.username;
+        }
+
+        // For Google sessions, also enrich from DB so the session has id/username.
+        if (!token?.id && session.user?.email) {
+          await connectDB();
+          const user = await User.findOne({ email: session.user.email });
+          if (user) {
+            session.user.id = user._id.toString();
+            session.user.username = user.username;
+          }
         }
         return session;
       } catch (error) {
@@ -85,3 +148,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
+
+// Re-export for the register route to hash passwords consistently.
+export { hashPassword };

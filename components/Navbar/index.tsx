@@ -100,9 +100,24 @@ const Navbar = () => {
           </div>
 
           {/* <!-- Right Side Menu (Loging or Register Button) --> */}
-          {/* Sign-in button hidden temporarily */}
           <div className='hidden md:flex items-center gap-3'>
             <ThemeToggle />
+            {!session && (
+              <>
+                <Link
+                  href='/login'
+                  className='text-slate-700 dark:text-slate-200 hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition'
+                >
+                  Login
+                </Link>
+                <Link
+                  href='/register'
+                  className='text-slate-700 dark:text-slate-200 hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition'
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
       
           {session && (
@@ -240,7 +255,22 @@ const Navbar = () => {
                   </Link>
                 )}
 
-                {/* Sign-in button hidden temporarily */}
+                {!session && (
+                  <>
+                    <Link
+                      href='/login'
+                      className='text-slate-800 dark:text-slate-200 hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href='/register'
+                      className='text-slate-800 dark:text-slate-200 hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'
+                    >
+                      Register
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
       )}
