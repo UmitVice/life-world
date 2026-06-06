@@ -14,36 +14,57 @@ import { resolvePropertyLocation, buildAddress } from '@/utils/geocode';
 const MapContainer = dynamic(
   () => import('react-leaflet').then((m) => m.MapContainer),
   { ssr: false }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) as any;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TileLayer = dynamic(
   () => import('react-leaflet').then((m) => m.TileLayer),
   { ssr: false }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) as any;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Marker = dynamic(
   () => import('react-leaflet').then((m) => m.Marker),
   { ssr: false }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) as any;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Popup = dynamic(
   () => import('react-leaflet').then((m) => m.Popup),
   { ssr: false }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) as any;
 
-interface PropertyMapProps {
-  properties: IProperty[];
-}
+type Source = 'geocoded' | 'stored';
 
 interface ResolvedProperty {
   property: IProperty;
   address: string;
   lat: number;
   lng: number;
-  source: 'geocoded' | 'stored';
+  source: Source;
+  /** true while a geocode call is in flight for this row. */
+  pending?: boolean;
+}
+
+interface PropertyMapProps {
+  properties: IProperty[];
+  /**
+   * 'list' shows all properties as markers (used on /properties).
+   * 'single' shows one focused property and re-geocodes eagerly.
+   * Default: 'list'.
+   */
+  mode?: 'list' | 'single';
+  /**
+   * Optional height override. Defaults to 500px for the list view and
+   * 400px for the single-property view (matches the old MapDisplay
+   * placeholder).
+   */
+  height?: number;
+  className?: string;
 }
 
 const getPriceForDisplay = (property: IProperty): number => {
@@ -53,12 +74,46 @@ const getPriceForDisplay = (property: IProperty): number => {
   return 0;
 };
 
-const PropertyMap: React.FC<PropertyMapProps> = ({ properties }) => {
+// US city centers used as a last-resort fallback when a property is missing
+// both stored coordinates AND a successful geocode. The seed data is
+// concentrated in these cities, so we keep a small lookup table to avoid
+// burning the Nominatim rate limit on every miss.
+const CITY_CENTERS: Record<string, [number, number]> = {
+  'New York':     [40.7128, -74.0060],
+  'Los Angeles':  [34.0522, -118.2437],
+  'Chicago':      [41.8781, -87.6298],
+  'Houston':      [29.7604, -95.3690],
+  'Phoenix':      [33.4484, -112.0740],
+  'Philadelphia': [39.9526, -75.1652],
+  'San Antonio':  [29.4241, -98.4936],
+  'San Diego':    [32.7157, -117.1611],
+  'Dallas':       [32.7767, -96.7970],
+  'San Jose':     [37.3382, -121.8863],
+};
+
+const fallbackCenter = (property: IProperty): [number, number] | null => {
+  const city = property.location?.city;
+  if (city && CITY_CENTERS[city]) return CITY_CENTERS[city];
+  return null;
+};
+
+const PropertyMap: React.FC<PropertyMapProps> = ({
+  properties,
+  mode = 'list',
+  height,
+  className,
+}) => {
   const [isClient, setIsClient] = useState(false);
   const [resolved, setResolved] = useState<ResolvedProperty[]>([]);
-  const [loadingAddresses, setLoadingAddresses] = useState<Set<string>>(new Set());
+  const [loadingAddresses, setLoadingAddresses] = useState<Set<string>>(
+    new Set()
+  );
   const [center, setCenter] = useState<[number, number]>([41.0082, 28.9784]);
-  const mapRef = useRef<{ flyTo: (latlng: [number, number], zoom?: number) => void } | null>(null);
+  const mapRef = useRef<{
+    flyTo: (latlng: [number, number], zoom?: number) => void;
+  } | null>(null);
+
+  const containerHeight = height ?? (mode === 'single' ? 400 : 500);
 
   useEffect(() => {
     setIsClient(true);
@@ -82,14 +137,19 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ properties }) => {
     })();
   }, []);
 
-  // Initial pass: use stored coordinates (fast, no network).
+  // First pass: render everything we can with stored coordinates
+  // (instant, no network) so the user sees markers right away.
   useEffect(() => {
     if (!isClient) return;
 
     const initial: ResolvedProperty[] = [];
     for (const property of properties) {
       const coords = property.location?.coordinates;
-      if (coords && Number.isFinite(coords.lat) && Number.isFinite(coords.lng)) {
+      if (
+        coords &&
+        Number.isFinite(coords.lat) &&
+        Number.isFinite(coords.lng)
+      ) {
         initial.push({
           property,
           address: buildAddress(property.location ?? {}),
@@ -106,13 +166,95 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ properties }) => {
     }
   }, [isClient, properties]);
 
-  // When user clicks a marker, geocode the actual address and
-  // pan the map to the exact location. Honors Nominatim's
-  // 1 req/sec rate limit via the cache inside geocodeAddress.
+  // Second pass: progressively resolve any property still missing
+  // coordinates. We kick off the requests on mount and as `properties`
+  // changes, but never re-fire for an id that's already in `resolved`.
+  useEffect(() => {
+    if (!isClient || properties.length === 0) return;
+
+    const pending: IProperty[] = [];
+    for (const property of properties) {
+      const id = property._id?.toString() ?? '';
+      if (!id) continue;
+      const coords = property.location?.coordinates;
+      const hasStored =
+        coords &&
+        Number.isFinite(coords.lat) &&
+        Number.isFinite(coords.lng);
+      if (hasStored) continue;
+      // If we already have a row for this id (e.g. from a prior
+      // geocode), don't re-resolve.
+      if (resolved.some((r) => r.property._id?.toString() === id)) continue;
+      pending.push(property);
+    }
+
+    if (pending.length === 0) return;
+
+    let cancelled = false;
+
+    (async () => {
+      for (const property of pending) {
+        if (cancelled) return;
+        const id = property._id?.toString() ?? '';
+        // Try real geocoding first (rate-limited inside the helper).
+        setLoadingAddresses((prev) => new Set(prev).add(id));
+        const result = await resolvePropertyLocation(property);
+        if (cancelled) return;
+
+        let next: ResolvedProperty | null = null;
+        if (result) {
+          next = {
+            property,
+            address: buildAddress(property.location ?? {}),
+            lat: result.lat,
+            lng: result.lng,
+            source: result.source,
+          };
+        } else {
+          // Last-resort: drop a marker at the known city center so
+          // users at least see something in the right region.
+          const center = fallbackCenter(property);
+          if (center) {
+            next = {
+              property,
+              address: buildAddress(property.location ?? {}),
+              lat: center[0],
+              lng: center[1],
+              source: 'stored',
+            };
+          }
+        }
+
+        if (next) {
+          setResolved((prev) => {
+            // Avoid duplicates in case the user toggles view quickly.
+            if (prev.some((r) => r.property._id?.toString() === id)) {
+              return prev;
+            }
+            return [...prev, next];
+          });
+        }
+
+        setLoadingAddresses((prev) => {
+          const nextSet = new Set(prev);
+          nextSet.delete(id);
+          return nextSet;
+        });
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isClient, properties, resolved]);
+
+  // When the user clicks a marker that is still on a stored (rough)
+  // coordinate, geocode the address and re-center the map on the
+  // exact location. Honors Nominatim's 1 req/sec rate limit via the
+  // cache inside geocodeAddress.
   const handleMarkerClick = useCallback(
     async (item: ResolvedProperty) => {
       if (item.source === 'geocoded' || !item.address) return;
-
       const propertyId = item.property._id?.toString() ?? '';
       if (loadingAddresses.has(propertyId)) return;
       setLoadingAddresses((prev) => new Set(prev).add(propertyId));
@@ -142,28 +284,52 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ properties }) => {
 
   if (!isClient) {
     return (
-      <div className="h-[500px] w-full bg-gray-200 dark:bg-slate-800 animate-pulse flex items-center justify-center text-slate-500 dark:text-slate-400 rounded-lg">
+      <div
+        className={`w-full bg-gray-200 dark:bg-slate-800 animate-pulse flex items-center justify-center text-slate-500 dark:text-slate-400 rounded-lg ${
+          className ?? ''
+        }`}
+        style={{ height: containerHeight }}
+      >
         Loading Map...
       </div>
     );
   }
 
   if (resolved.length === 0) {
+    // In 'list' mode we may still be geocoding in the background; show
+    // a friendlier message that doesn't pretend the data is missing.
+    const inFlight = loadingAddresses.size > 0;
     return (
-      <div className="h-[500px] w-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-slate-700">
-        No properties with location data available to display on the map.
+      <div
+        className={`w-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-slate-700 ${
+          className ?? ''
+        }`}
+        style={{ height: containerHeight }}
+      >
+        {inFlight
+          ? `Resolving ${loadingAddresses.size} location${
+              loadingAddresses.size === 1 ? '' : 's'
+            }...`
+          : 'No properties with location data available to display on the map.'}
       </div>
     );
   }
 
   return (
-    <div className="h-[500px] w-full rounded-lg shadow-inner overflow-hidden border border-slate-300 dark:border-slate-700">
+    <div
+      className={`w-full rounded-lg shadow-inner overflow-hidden border border-slate-300 dark:border-slate-700 ${
+        className ?? ''
+      }`}
+      style={{ height: containerHeight }}
+    >
       <MapContainer
         center={center}
-        zoom={resolved.length > 1 ? 4 : 13}
+        zoom={mode === 'single' ? 13 : resolved.length > 1 ? 4 : 13}
         scrollWheelZoom
         style={{ height: '100%', width: '100%' }}
-        ref={(map: { flyTo: (latlng: [number, number], zoom?: number) => void } | null) => {
+        ref={(map: {
+          flyTo: (latlng: [number, number], zoom?: number) => void;
+        } | null) => {
           mapRef.current = map;
         }}
       >
@@ -185,11 +351,15 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ properties }) => {
             >
               <Popup>
                 <div className="p-1 min-w-[200px]">
-                  <h3 className="font-bold text-sm mb-1">{item.property.name}</h3>
+                  <h3 className="font-bold text-sm mb-1">
+                    {item.property.name}
+                  </h3>
                   <p className="text-xs text-slate-700 mb-1">
-                    📍 {item.address || `${item.property.location?.city}, ${item.property.location?.state}`}
+                    📍{' '}
+                    {item.address ||
+                      `${item.property.location?.city}, ${item.property.location?.state}`}
                   </p>
-                  {item.source === 'stored' && (
+                  {item.source === 'stored' && mode === 'list' && (
                     <button
                       type="button"
                       onClick={(e) => {
@@ -204,17 +374,21 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ properties }) => {
                     </button>
                   )}
                   {item.source === 'geocoded' && (
-                    <p className="text-[10px] text-emerald-600">✓ Exact location</p>
+                    <p className="text-[10px] text-emerald-600">
+                      ✓ Exact location
+                    </p>
                   )}
                   <p className="text-sm font-semibold text-emerald-700 mt-2">
                     ${getPriceForDisplay(item.property).toLocaleString()}
                   </p>
-                  <a
-                    href={`/properties/${item.property._id}`}
-                    className="text-xs text-blue-600 hover:underline block mt-1"
-                  >
-                    View details →
-                  </a>
+                  {mode === 'list' && (
+                    <a
+                      href={`/properties/${item.property._id}`}
+                      className="text-xs text-blue-600 hover:underline block mt-1"
+                    >
+                      View details →
+                    </a>
+                  )}
                 </div>
               </Popup>
             </Marker>
