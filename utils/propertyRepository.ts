@@ -61,7 +61,7 @@ export async function getProperties(filters: PropertyFilters = {}) {
       if (filters.limit) queryBuilder.limit(filters.limit);
       return await queryBuilder.lean<IProperty[]>();
     } catch (error) {
-      console.error('Property database unavailable; serving the demo catalog.', error);
+      console.error('Property database unavailable; serving the fallback catalog.', error);
     }
   }
 
@@ -76,7 +76,7 @@ export async function getProperty(id: string) {
       const property = await Property.findById(id).lean<IProperty>();
       if (property) return property;
     } catch (error) {
-      console.error('Property database unavailable; checking the demo catalog.', error);
+      console.error('Property database unavailable; checking the fallback catalog.', error);
     }
   }
   return demoProperties.find((property) => String(property._id) === id) ?? null;

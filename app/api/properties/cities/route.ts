@@ -16,8 +16,8 @@ export async function GET() {
     return NextResponse.json({ cities: sorted });
   } catch (error) {
     console.error('Error fetching cities:', error);
-    const demo = await getProperties();
-    const cities = Array.from(new Set(demo.map((property) => property.location.city).filter((city): city is string => Boolean(city)))).sort((a, b) => a.localeCompare(b));
+    const fallbackProperties = await getProperties();
+    const cities = Array.from(new Set(fallbackProperties.map((property) => property.location.city).filter((city): city is string => Boolean(city)))).sort((a, b) => a.localeCompare(b));
     return NextResponse.json({ cities });
   }
 }

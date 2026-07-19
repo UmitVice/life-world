@@ -119,8 +119,8 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching properties:', error);
-    const demo = serializeProperties(await getProperties());
-    return NextResponse.json({ properties: demo, totalPages: 1, currentPage: 1, total: demo.length, limit: demo.length });
+    const fallbackProperties = serializeProperties(await getProperties());
+    return NextResponse.json({ properties: fallbackProperties, totalPages: 1, currentPage: 1, total: fallbackProperties.length, limit: fallbackProperties.length });
   }
 }
 

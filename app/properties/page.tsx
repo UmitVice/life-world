@@ -113,8 +113,8 @@ const PropertiesPage = async ({
     total = count;
   } catch (error) {
     console.error('PropertiesPage DB error:', error);
-    const demo = await getProperties({ type, location: city });
-    const filtered = demo.filter((property) => {
+    const fallbackProperties = await getProperties({ type, location: city });
+    const filtered = fallbackProperties.filter((property) => {
       const bedsMatch = (minBeds === undefined || property.beds >= minBeds) && (maxBeds === undefined || property.beds <= maxBeds);
       const rates = [property.rates?.nightly, property.rates?.weekly, property.rates?.monthly].filter((rate): rate is number => typeof rate === 'number');
       const priceMatch = (minPrice === undefined && maxPrice === undefined) || rates.some((rate) => (minPrice === undefined || rate >= minPrice) && (maxPrice === undefined || rate <= maxPrice));

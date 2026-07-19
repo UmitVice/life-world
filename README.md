@@ -1,8 +1,8 @@
 # Life World
 
-A full-stack real estate marketplace built to demonstrate product engineering judgment, resilient architecture, and polished user experience.
+A full-stack real estate marketplace with resilient architecture and a polished user experience.
 
-[Engineering case study](./app/project/page.tsx) · [Portfolio owner](https://github.com/UmitVice)
+[Website](https://www.umitvice.com/) · [GitHub](https://github.com/UmitVice)
 
 ## Product capabilities
 
@@ -12,9 +12,8 @@ A full-stack real estate marketplace built to demonstrate product engineering ju
 - Property detail pages with fullscreen gallery, amenities, rates, and map
 - Credentials authentication, protected owner workflows, and admin authorization
 - Typed Mongoose models, Zod validation, and authorized route handlers
-- Curated demo fallback for public reads when MongoDB is unavailable
+- Curated sample fallback for public reads when MongoDB is unavailable
 - Dark mode, accessible states, SEO metadata, and custom social preview
-- In-product `/project` engineering case study
 
 ## Architecture
 
@@ -25,12 +24,12 @@ Next.js 16 App Router
 ├── Route handlers (Zod validation + authorization)
 ├── Property repository
 │   ├── MongoDB / Mongoose production path
-│   └── Typed read-only demo fallback
+│   └── Typed read-only sample fallback
 ├── Leaflet map and geocoding layer
 └── Responsive Tailwind CSS component system
 ```
 
-The repository boundary is deliberate: production data is preferred whenever MongoDB is configured, while public read paths gracefully fall back to curated demo data. Authenticated writes always require real persistence.
+The repository boundary is deliberate: production data is preferred whenever MongoDB is configured, while public read paths gracefully fall back to curated sample data. Authenticated writes always require real persistence.
 
 ## Local development
 
@@ -56,8 +55,8 @@ yarn optimize-images  # generate card/header/marker WebP variants
 ## Engineering decisions
 
 - **URLs own discovery state:** filtered result sets are shareable and server-renderable.
-- **Public reads degrade gracefully:** evaluators never land on an empty portfolio demo because infrastructure is asleep.
-- **Writes stay honest:** demo fallback never pretends to persist authenticated mutations.
+- **Public reads degrade gracefully:** visitors never land on an empty catalog because infrastructure is asleep.
+- **Writes stay honest:** the sample fallback never pretends to persist authenticated mutations.
 - **Images are purpose-sized:** separate card, header, and marker variants reduce transfer cost and layout shift.
 - **Capabilities are progressive:** browsing works first; identity unlocks owner and admin workflows.
 
@@ -68,4 +67,4 @@ yarn optimize-images  # generate card/header/marker WebP variants
 - Contract tests for route handlers and end-to-end coverage for the core funnel
 - Search conversion, API latency, and failure-rate observability
 
-Built by [Ümit Vice](https://github.com/UmitVice). Public listings and contact details are demonstration data.
+Built by [Ümit Vice](https://www.umitvice.com/). Public listings and contact details may contain sample data.
