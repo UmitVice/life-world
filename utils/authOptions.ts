@@ -64,6 +64,7 @@ export const authOptions: NextAuthOptions = {
           name: user.username,
           image: user.image,
           username: user.username,
+          role: user.role ?? 'user',
         } as any;
       },
     }),
@@ -107,6 +108,7 @@ export const authOptions: NextAuthOptions = {
             email: profile.email,
             username,
             image: profile.picture,
+            role: (process.env.ADMIN_EMAILS || '').split(',').map((email) => email.trim().toLowerCase()).includes(profile.email.toLowerCase()) ? 'admin' : 'user',
           });
         }
         return true;
@@ -120,6 +122,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = (user as any).id;
         token.username = (user as any).username;
+        token.role = (user as any).role ?? 'user';
       }
       return token;
     },
@@ -129,6 +132,7 @@ export const authOptions: NextAuthOptions = {
         if (session.user) {
           if (token?.id) session.user.id = token.id;
           if (token?.username) session.user.username = token.username;
+          if (token?.role) session.user.role = token.role;
         }
 
         // For Google sessions, also enrich from DB so the session has id/username.
@@ -138,6 +142,7 @@ export const authOptions: NextAuthOptions = {
           if (user) {
             session.user.id = user._id.toString();
             session.user.username = user.username;
+            session.user.role = user.role ?? 'user';
           }
         }
         return session;

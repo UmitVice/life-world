@@ -1,50 +1,28 @@
 import Link from 'next/link';
-import { unstable_noStore as noStore } from 'next/cache';
 import PropertyCard from '@/components/PropertyCard';
-import connectDB from '@/config/database';
-import Property, { IProperty } from '@/models/Property';
+import { getProperties } from '@/utils/propertyRepository';
 import { serializeProperties } from '@/utils/serializeProperty';
 
 const HomeProperties = async () => {
-  noStore();
-  let recentProperties: IProperty[] = [];
-  try {
-    await connectDB();
-    const docs = await Property.find({})
-      .sort({ createdAt: -1 })
-      .limit(3)
-      .lean<IProperty[]>();
-    // Serialize so Mongoose ObjectId/Date fields are plain values
-    // (required because PropertyCard is a Client Component).
-    recentProperties = serializeProperties(docs as IProperty[]);
-  } catch (error) {
-    // swallow to prevent server error crashing page; render empty state below
-  }
+  const recentProperties = serializeProperties(await getProperties({ limit: 3 }));
 
   return (
     <>
-    <section className="px-4 py-12 bg-slate-50 dark:bg-slate-950 transition-colors">
-    <div className="container-xl lg:container m-auto">
-      <h2 className="text-3xl font-bold text-slate-900 mb-6 text-center">
-        Recently Added
-      </h2>
+    <section className="bg-stone-50 px-4 py-20 dark:bg-slate-950 transition-colors">
+    <div className="mx-auto max-w-7xl">
+      <div className="mb-9 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="mb-2 text-sm font-bold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-400">Fresh on the market</p>
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl dark:text-white">Homes worth a closer look</h2>
+        </div>
+        <Link href="/properties" className="group inline-flex items-center gap-2 font-semibold text-slate-700 hover:text-emerald-700 dark:text-slate-300 dark:hover:text-emerald-400">Explore every home <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span></Link>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {recentProperties?.length === 0 ? (
-          <p>No properties found</p>
-        ) : (recentProperties?.map((property) => (
+        {recentProperties.map((property) => (
             <PropertyCard key={property?._id?.toString()} property={property} />
-        )))}
+        ))}
       </div>
     </div>
-    </section>
-
-    <section className="m-auto max-w-lg my-10 px-6">
-      <Link
-        href="/properties"
-        className="block bg-slate-900 text-white text-center py-4
-        px-6 rounded-xl hover:bg-slate-800 transition"
-      >View All Properties
-      </Link>
     </section>
     </>
   )

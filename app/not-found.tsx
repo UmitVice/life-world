@@ -1,32 +1,6 @@
-const NotFoundPage = () => {
-  return (
-    <>
-    <section className="bg-blue-50 min-h-screen flex-grow">
-    <div className="container m-auto max-w-2xl py-24">
-      <div
-        className="bg-white px-6 py-24 mb-4 shadow-md rounded-md border m-4 md:m-0"
-      >
-        <div className="flex justify-center">
-          <i
-            className="fas fa-exclamation-triangle fa-5x text-8xl text-yellow-400"
-          ></i>
-        </div>
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mt-4 mb-2">Page Not Found</h1>
-          <p className="text-gray-500 text-xl mb-10">
-            The page you are looking for does not exist.
-          </p>
-          <a
-            href="/"
-            className="bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 px-6 rounded"
-            >Go Home</a>
-        </div>
-      </div>
-    </div>
-    <div className="flex-grow"></div>
-  </section>
-  </>
-  )
-};
+import Link from 'next/link';
+import { HiOutlineHomeModern } from 'react-icons/hi2';
 
-export default NotFoundPage;
+export default function NotFoundPage() {
+  return <section className="grid min-h-[70vh] place-items-center bg-stone-50 px-4 dark:bg-slate-950"><div className="max-w-xl text-center"><span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"><HiOutlineHomeModern className="h-8 w-8" /></span><p className="mt-6 text-sm font-bold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-400">404 · Address not found</p><h1 className="font-display mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">This place is off the market.</h1><p className="mt-4 text-lg leading-8 text-slate-600 dark:text-slate-300">The page may have moved, but there are plenty of other places worth discovering.</p><div className="mt-8 flex flex-wrap justify-center gap-3"><Link href="/properties" className="rounded-full bg-slate-950 px-5 py-3 font-bold text-white dark:bg-emerald-500 dark:text-slate-950">Browse homes</Link><Link href="/" className="rounded-full border border-slate-300 px-5 py-3 font-bold dark:border-slate-700">Back home</Link></div></div></section>;
+}

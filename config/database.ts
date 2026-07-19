@@ -1,15 +1,6 @@
 import mongoose from 'mongoose';
 
-const mongoDB_URI = process.env.MONGODB_URI as string;
-
-if (!mongoDB_URI) {
-  // Fail fast at module load — no point serving requests without a DB.
-  // The original code would throw lazily inside connectDB(), which gave
-  // confusing 500s for every route.
-  throw new Error(
-    'MONGODB_URI is not defined. Set it in .env (or .env.local) before starting the server.',
-  );
-}
+const mongoDB_URI = process.env.MONGODB_URI;
 
 // Singleton pattern: Next.js HMR + serverless both reconnect on every
 // invocation without this, which exhausts the Mongo connection pool.
@@ -30,6 +21,9 @@ globalForMongo._mongooseCache = cache;
 mongoose.set('strictQuery', true);
 
 const connectDB = async (): Promise<typeof mongoose> => {
+  if (!mongoDB_URI) {
+    throw new Error('MONGODB_URI is not defined. Set it in .env (or .env.local) before using persistent features.');
+  }
   if (cache.conn) return cache.conn;
   if (!cache.promise) {
     cache.promise = mongoose.connect(mongoDB_URI).then((m) => m);

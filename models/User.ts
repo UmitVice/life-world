@@ -20,6 +20,11 @@ const UserSchema = new Schema({
     image: {
         type: String,
     },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user',
+    },
     bookmarks: [
         {
             type: Schema.Types.ObjectId,

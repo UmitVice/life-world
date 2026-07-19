@@ -1,9 +1,7 @@
-import connectDB from '@/config/database';
-import Property from '@/models/Property';
 import PropertyDetails from '@/components/PropertyDetails';
 import { IProperty } from '@/models/Property';
 import { serializeProperty } from '@/utils/serializeProperty';
-import { objectIdSchema } from '@/utils/validators';
+import { getProperty } from '@/utils/propertyRepository';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -28,16 +26,8 @@ export async function generateMetadata({
   params,
 }: PropertyPageProps): Promise<Metadata> {
   const { id } = await params;
-  const validation = objectIdSchema.safeParse(id);
-  if (!validation.success) {
-    return { title: 'Property Not Found | Life World' };
-  }
-
   try {
-    await connectDB();
-    const doc = await Property.findById(validation.data)
-      .select('name description type location')
-      .lean();
+    const doc = await getProperty(id);
     if (!doc) return { title: 'Property Not Found | Life World' };
 
     const title = `${doc.name} | Life World`;
@@ -67,15 +57,9 @@ export async function generateMetadata({
 const PropertyPage = async ({ params }: PropertyPageProps) => {
   const { id } = await params;
 
-  // Reject obviously invalid ids early so we can return a proper 404
-  // instead of a misleading "Property not found" page.
-  const validation = objectIdSchema.safeParse(id);
-  if (!validation.success) notFound();
-
   let property: IProperty | null = null;
   try {
-    await connectDB();
-    const doc = await Property.findById(validation.data).lean();
+    const doc = await getProperty(id);
     property = doc ? serializeProperty(doc as unknown as IProperty) : null;
   } catch (error) {
     console.error('PropertyPage DB error:', error);

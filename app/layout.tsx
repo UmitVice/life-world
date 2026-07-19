@@ -5,29 +5,32 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import "@/assets/styles/globals.css";
 
 export const metadata = {
-  title: 'Life World | Universe of Property ',
-  description: 'Great properties for Rental, Buy and Sell',
-  keywords: 'buy property, buy home, sell home, sell propert, rent home, rental property',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  title: { default: 'Life World | Find a place that feels right', template: '%s | Life World' },
+  description: 'A thoughtfully engineered real estate marketplace for discovering and comparing exceptional homes.',
+  keywords: ['real estate marketplace', 'property search', 'Next.js portfolio', 'full-stack application'],
+  openGraph: { title: 'Life World', description: 'A better way to find your next place.', type: 'website', images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Life World real estate marketplace' }] },
+  twitter: { card: 'summary_large_image', title: 'Life World', description: 'A better way to find your next place.', images: ['/og.png'] },
 };
 
-type MainLayoutProps = {
-  children: React.ReactNode;
-}
-
-const MainLayout = ({ children }: MainLayoutProps) => {
+const MainLayout = ({ children }: MainLayoutProps)  => {
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased transition-colors duration-300">
+      <body className="min-h-screen">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <Navbar />
-            <main>{children}</main>
+            <div>{children}</div>
             <Footer />
           </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
   )
+}
+
+type MainLayoutProps = {
+  children: React.ReactNode;
 }
 
 export default MainLayout;

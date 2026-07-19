@@ -54,7 +54,7 @@ const propertySchema = new Schema<IProperty>({
   type: {
     type: String,
     required: [true, 'Property type is required'],
-    enum: ['Apartment', 'Condo', 'House', 'Townhouse']
+    enum: ['Apartment', 'Condo', 'House', 'Townhouse', 'Villa', 'Room', 'Land', 'Other']
   },
   description: {
     type: String,
@@ -74,12 +74,12 @@ const propertySchema = new Schema<IProperty>({
   beds: {
     type: Number,
     required: [true, 'Number of beds is required'],
-    min: [1, 'At least 1 bed required']
+    min: [0, 'Beds cannot be negative']
   },
   baths: {
     type: Number,
     required: [true, 'Number of baths is required'],
-    min: [1, 'At least 1 bath required']
+    min: [0, 'Baths cannot be negative']
   },
   square_feet: {
     type: Number,

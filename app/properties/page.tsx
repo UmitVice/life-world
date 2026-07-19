@@ -6,6 +6,7 @@ import ViewToggle from '@/components/ViewToggle';
 import connectDB from '@/config/database';
 import Property, { IProperty } from '@/models/Property';
 import { serializeProperties } from '@/utils/serializeProperty';
+import { getProperties } from '@/utils/propertyRepository';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
@@ -112,7 +113,17 @@ const PropertiesPage = async ({
     total = count;
   } catch (error) {
     console.error('PropertiesPage DB error:', error);
-    // Empty state will be rendered
+    const demo = await getProperties({ type, location: city });
+    const filtered = demo.filter((property) => {
+      const bedsMatch = (minBeds === undefined || property.beds >= minBeds) && (maxBeds === undefined || property.beds <= maxBeds);
+      const rates = [property.rates?.nightly, property.rates?.weekly, property.rates?.monthly].filter((rate): rate is number => typeof rate === 'number');
+      const priceMatch = (minPrice === undefined && maxPrice === undefined) || rates.some((rate) => (minPrice === undefined || rate >= minPrice) && (maxPrice === undefined || rate <= maxPrice));
+      const amenitiesMatch = !amenities?.length || amenities.some((amenity) => property.amenities.includes(amenity));
+      return bedsMatch && priceMatch && amenitiesMatch;
+    });
+    total = filtered.length;
+    const skip = (currentPage - 1) * PAGE_SIZE;
+    properties = serializeProperties(filtered.slice(skip, skip + PAGE_SIZE));
   }
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/config/database';
 import Property from '@/models/Property';
+import { getProperties } from '@/utils/propertyRepository';
 
 // Returns distinct cities for the filter dropdown
 export async function GET() {
@@ -15,9 +16,8 @@ export async function GET() {
     return NextResponse.json({ cities: sorted });
   } catch (error) {
     console.error('Error fetching cities:', error);
-    return NextResponse.json(
-      { cities: [], error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    const demo = await getProperties();
+    const cities = Array.from(new Set(demo.map((property) => property.location.city).filter((city): city is string => Boolean(city)))).sort((a, b) => a.localeCompare(b));
+    return NextResponse.json({ cities });
   }
 }

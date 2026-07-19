@@ -1,281 +1,33 @@
 'use client';
-import { useState, useEffect } from 'react';
+
+import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
+import { HiBars3, HiOutlineBuildingOffice2, HiXMark } from 'react-icons/hi2';
 import ThemeToggle from './ThemeToggle';
 
-const Navbar = () => {
+const links = [{ href: '/', label: 'Home' }, { href: '/properties', label: 'Homes' }, { href: '/project', label: 'Case study' }];
+
+export default function Navbar() {
   const { data: session } = useSession();
-  const profileImage = session?.user?.image;
-
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  // Auth providers temporarily disabled
-
   const pathname = usePathname();
+  const [mobile, setMobile] = useState(false);
+  const [profile, setProfile] = useState(false);
 
-  // Disabled fetching providers while Google Sign-In is turned off
-  
-  useEffect(() => {}, []);
+  const navLink = ({ href, label }: typeof links[number]) => {
+    const active = href === '/' ? pathname === '/' : pathname.startsWith(href);
+    return <Link key={href} onClick={() => setMobile(false)} href={href} className={`${active ? 'text-slate-950 dark:text-white' : 'text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white'} relative rounded-lg px-3 py-2 text-sm font-semibold transition`}>{label}{active && <span className="absolute inset-x-3 -bottom-[13px] h-0.5 rounded-full bg-emerald-500" />}</Link>;
+  };
 
   return (
-    <nav className='backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/60 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 transition-colors'>
-      <div className='mx-auto max-w-8xl px-2 sm:px-6 lg:px-8'>
-        <div className='relative flex h-16 items-center justify-between'>
-          <div className='absolute inset-y-0 left-0 flex items-center md:hidden'>
-            {/* <!-- Mobile menu button--> */}
-            <button
-              type='button'
-              id='mobile-dropdown-button'
-              className='relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700
-               hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'
-              aria-controls='mobile-menu'
-              aria-expanded='false'
-              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-            >
-              <span className='absolute -inset-0.5'></span>
-              <span className='sr-only'>Open main menu</span>
-              {/* suppressHydrationWarning disables React's hydration check
-                  for this SVG. Browser extensions such as Dark Reader
-                  inject inline attributes (data-darkreader-inline-*) at
-                  runtime, which otherwise triggers a hydration mismatch. */}
-              <svg
-                suppressHydrationWarning
-                className='block h-6 w-6'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth='1.5'
-                stroke='currentColor'
-                aria-hidden='true'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'
-                />
-              </svg>
-            </button>
-          </div>
-
-          <div className='flex flex-1 items-center justify-center md:items-stretch md:justify-start'>
-            {/* <!-- Logo --> */}
-            <Link className='flex flex-shrink-0 items-center' href='/'>
-              <span className='hidden md:block text-slate-900 dark:text-white text-2xl font-bold ml-2'>
-                Life World
-              </span>
-            </Link>
-            {/* <!-- Desktop Menu Hidden below md screens --> */}
-            <div className='hidden md:ml-6 md:block'>
-              <div className='flex space-x-2'>
-                <Link
-                  href='/'
-                  className={`${
-                    pathname === '/' ? 'bg-slate-900 text-white' : 'text-slate-700 dark:text-slate-200'
-                  } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
-                >
-                  Home
-                </Link>
-                <Link
-                  href='/properties'
-                  className={`${
-                    pathname === '/properties' ? 'bg-slate-900 text-white' : 'text-slate-700 dark:text-slate-200'
-                  } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
-                >
-                  Properties
-                </Link>
-                {session && (
-                    <Link
-                      href='/properties/add'
-                      className={`${
-                        pathname === '/properties/add' ? 'bg-slate-900 text-white' : 'text-slate-700 dark:text-slate-200'
-                      } hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition`}
-                    >
-                     Add Property
-                    </Link>
-                )}
-             
-              </div>
-            </div>
-          </div>
-
-          {/* <!-- Right Side Menu (Loging or Register Button) --> */}
-          <div className='hidden md:flex items-center gap-3'>
-            <ThemeToggle />
-            {!session && (
-              <>
-                <Link
-                  href='/login'
-                  className='text-slate-700 dark:text-slate-200 hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition'
-                >
-                  Login
-                </Link>
-                <Link
-                  href='/register'
-                  className='text-slate-700 dark:text-slate-200 hover:bg-slate-900/90 hover:text-white rounded-md px-3 py-2 transition'
-                >
-                  Register
-                </Link>
-              </>
-            )}
-          </div>
-      
-          {session && (
-            <div className='absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0'>
-            <Link href='messages' className='relative group'>
-              <button
-                type='button'
-                className='relative rounded-full bg-slate-200 dark:bg-slate-800 p-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500'
-              >
-            
-                <span className='sr-only'>View notifications</span>
-                <svg
-                  suppressHydrationWarning
-                  className='h-6 w-6'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  strokeWidth='1.5'
-                  stroke='currentColor'
-                  aria-hidden='true'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0'
-                  />
-                </svg>
-              </button>
-              {/*<span className='absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none
-               text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full'>
-                2
-                {/* <!-- Replace with the actual number of notifications --> 
-              </span>
-              */}
-            </Link>
-            {/* <!-- Profile dropdown button --> */}
-            <div className='relative ml-3'>
-              <div>
-                <button
-                  type='button'
-                  className='relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2
-                   focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800'
-                  id='user-menu-button'
-                  aria-expanded='false'
-                  aria-haspopup='true'
-                  onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-                >          
-                  <span className='sr-only'>Open user menu</span>
-                  <img
-                    src={profileImage || '/images/icons/profile.png'}
-                    alt='Profile Image'
-                    width={40}
-                    height={40}
-                    className='h-8 w-8 rounded-full'
-                  />
-                </button>
-              </div>
-
-              {/* <!-- Profile dropdown --> */}
-              { isProfileMenuOpen && (
-              <div
-                id='user-menu'
-                className='absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-white py-2 shadow-lg ring-1 ring-slate-200 focus:outline-none'
-                role='menu'
-                aria-orientation='vertical'
-                aria-labelledby='user-menu-button'
-                tabIndex={-1}
-              >
-                <Link
-                  href='/profile'
-                  className='block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50'
-                  role='menuitem'
-                  tabIndex={-1}
-                  id='user-menu-item-0'
-                >
-                  Your Profile
-                </Link>
-                <Link
-                  href='/properties/saved'
-                  className='block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50'
-                  role='menuitem'
-                  tabIndex={-1}
-                  id='user-menu-item-2'
-                >
-                  Saved Properties
-                </Link>
-                <button
-                  className='block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 w-full text-left'
-                  role='menuitem'
-                  tabIndex={-1}
-                  id='user-menu-item-2'
-                  onClick={() => {
-                    setIsProfileMenuOpen(false);
-                    signOut();
-                  }}
-                >
-                  Sign Out
-                </button>
-              </div>
-              )}
-            </div>
-          </div>
-          )}
-
-        </div>
+    <nav className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-8"><Link href="/" className="flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-slate-950 dark:text-white" aria-label="Life World home"><span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-500 text-slate-950"><HiOutlineBuildingOffice2 className="h-5 w-5" /></span>Life World <span className="hidden rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-800 sm:inline dark:bg-emerald-950 dark:text-emerald-300">Demo</span></Link><div className="hidden items-center gap-1 md:flex">{links.map(navLink)}</div></div>
+        <div className="hidden items-center gap-2 md:flex"><ThemeToggle />{!session && <><Link href="/login" className="rounded-full border border-slate-300 px-4 py-2 text-sm font-bold hover:border-slate-950 dark:border-slate-700">Sign in</Link><Link href="/register" className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-400">Create account</Link></>}{session && <div className="relative"><button onClick={() => setProfile(!profile)} aria-label="Open profile menu" aria-expanded={profile} className="rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500"><img src={session.user?.image || '/images/icons/profile.png'} alt="" className="h-9 w-9 rounded-full" /></button>{profile && <div className="absolute right-0 mt-3 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900"><Link href="/properties/add" className="block rounded-xl px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">Add a property</Link>{session.user?.role === 'admin' && <Link href="/admin" className="block rounded-xl px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">Admin</Link>}<button onClick={() => signOut({ callbackUrl: '/' })} className="block w-full rounded-xl px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800">Sign out</button></div>}</div>}<Link href="/properties" className="rounded-full bg-slate-950 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:text-slate-950">Browse homes</Link></div>
+        <div className="flex items-center gap-2 md:hidden"><ThemeToggle /><button aria-label={mobile ? 'Close menu' : 'Open menu'} aria-expanded={mobile} onClick={() => setMobile(!mobile)} className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 dark:border-slate-700">{mobile ? <HiXMark className="h-5 w-5" /> : <HiBars3 className="h-5 w-5" />}</button></div>
       </div>
-
-      {/* <!-- Mobile menu, show/hide based on menu state. --> */}
-      { isMobileMenuOpen && (
-              <div id='mobile-menu'>
-              <div className='space-y-1 px-2 pb-3 pt-2'>
-                <div className='px-3 py-2'><ThemeToggle /></div>
-                <Link
-                  href='/'
-                  className={`${
-                    pathname === '/' ? 'bg-slate-900 text-white ' : 'text-slate-800 dark:text-slate-200'
-                  } ' hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'`}                >
-                  Home
-                </Link>
-                <Link
-                  href='/properties'
-                  className={`${
-                    pathname === '/properties' ? 'bg-slate-900 text-white ' : 'text-slate-800 dark:text-slate-200'
-                  } ' hover:bg-slate-900/90 hover:text-white  block rounded-md px-3 py-2 text-base font-medium transition'`}     
-                >
-                  Properties
-                </Link>
-                {session && (
-                  <Link
-                    href='/properties/add'
-                    className={`${
-                      pathname === '/properties/add' ? 'bg-slate-900 text-white ' : 'text-slate-800 dark:text-slate-200'
-                    } ' hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'`}
-                  >
-                  Add Property
-                  </Link>
-                )}
-
-                {!session && (
-                  <>
-                    <Link
-                      href='/login'
-                      className='text-slate-800 dark:text-slate-200 hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      href='/register'
-                      className='text-slate-800 dark:text-slate-200 hover:bg-slate-900/90 hover:text-white block rounded-md px-3 py-2 text-base font-medium transition'
-                    >
-                      Register
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
-      )}
+      {mobile && <div className="border-t border-slate-200 bg-white px-4 py-4 md:hidden dark:border-slate-800 dark:bg-slate-950"><div className="flex flex-col gap-2">{links.map(navLink)}{!session && <><Link onClick={() => setMobile(false)} href="/login" className="rounded-xl px-4 py-3 text-sm font-bold">Sign in</Link><Link onClick={() => setMobile(false)} href="/register" className="rounded-xl px-4 py-3 text-sm font-bold">Create account</Link></>}<Link onClick={() => setMobile(false)} href="/properties" className="mt-2 rounded-xl bg-slate-950 px-4 py-3 text-center text-sm font-bold text-white dark:bg-emerald-500 dark:text-slate-950">Browse homes</Link></div></div>}
     </nav>
   );
-};
-
-export default Navbar;
+}
