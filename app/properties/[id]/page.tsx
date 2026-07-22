@@ -28,9 +28,9 @@ export async function generateMetadata({
   const { id } = await params;
   try {
     const doc = await getProperty(id);
-    if (!doc) return { title: 'Property Not Found | Life World' };
+    if (!doc) return { title: 'Property Not Found' };
 
-    const title = `${doc.name} | Life World`;
+    const title = doc.name;
     const description =
       doc.description?.slice(0, 160) ||
       `${doc.type} in ${doc.location?.city ?? ''}`.trim();
@@ -50,7 +50,7 @@ export async function generateMetadata({
       },
     };
   } catch {
-    return { title: 'Property Not Found | Life World' };
+    return { title: 'Property Not Found' };
   }
 }
 

@@ -2,7 +2,7 @@
 
 A full-stack real estate marketplace built to demonstrate product engineering judgment, resilient architecture, and polished user experience.
 
-[Engineering case study](./app/project/page.tsx) · [Portfolio owner](https://github.com/UmitVice)
+[Project owner](https://github.com/UmitVice)
 
 ## Product capabilities
 
@@ -14,7 +14,6 @@ A full-stack real estate marketplace built to demonstrate product engineering ju
 - Typed Mongoose models, Zod validation, and authorized route handlers
 - Curated demo fallback for public reads when MongoDB is unavailable
 - Dark mode, accessible states, SEO metadata, and custom social preview
-- In-product `/project` engineering case study
 
 ## Architecture
 
@@ -34,7 +33,7 @@ The repository boundary is deliberate: production data is preferred whenever Mon
 
 ## Local development
 
-Requirements: Node.js 22 and Yarn 1.22+.
+Requirements: Node.js 22 or 24 and Yarn 1.22+.
 
 ```bash
 yarn install

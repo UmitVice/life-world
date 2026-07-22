@@ -1,5 +1,5 @@
 {
-  "name": "live-world",
+  "name": "life-world",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -38,17 +38,18 @@
     "postcss": "^8.5.15",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   },
   "resolutions": {
     "postcss": "^8.5.10",
+    "sharp": "^0.35.3",
     "uuid": "^11.1.1"
   },
   "engines": {
-    "node": "22.x",
+    "node": "22.x || 24.x",
     "yarn": ">=1.22.0"
   },
   "packageManager": "yarn@1.22.22+sha256.c17d3797fb9a9115bf375e31bfd30058cac6bc9c3b8807a3d8cb2094794b51ca"

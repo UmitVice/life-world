@@ -1,7 +1,7 @@
 import { HiOutlineCheckBadge, HiOutlineMapPin, HiOutlineScale } from 'react-icons/hi2';
 
 const benefits = [
-  { icon: HiOutlineCheckBadge, title: 'Verified listings', copy: 'Every listing is reviewed for complete details, accurate photos, and transparent pricing.' },
+  { icon: HiOutlineCheckBadge, title: 'Detailed listings', copy: 'Compare photos, essential details, amenities, and pricing in a consistent format.' },
   { icon: HiOutlineMapPin, title: 'Local context', copy: 'Search by the places you care about and compare the essentials without opening ten tabs.' },
   { icon: HiOutlineScale, title: 'Confident decisions', copy: 'Clear amenities, flexible rates, and direct contact details put you in control.' },
 ];

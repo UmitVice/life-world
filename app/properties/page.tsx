@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 // indexable, so we set a sensible default and let the search engines
 // dedupe via the existing `?view=` and filter params.
 export const metadata: Metadata = {
-  title: 'Browse Properties | Life World',
+  title: 'Browse Properties',
   description:
     'Explore curated rental and for-sale properties across the US. Filter by city, type, price, beds, and amenities.',
   openGraph: {

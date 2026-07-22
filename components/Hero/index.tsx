@@ -9,7 +9,7 @@ const Hero = () => (
       <div className="max-w-3xl">
         <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium text-white backdrop-blur">
           <span className="h-2 w-2 rounded-full bg-emerald-400" />
-          120+ verified homes added this month
+          Discover homes in sought-after locations
         </div>
         <h1 className="font-display text-5xl font-semibold leading-[0.98] tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl">
           A better way to find your <span className="text-emerald-300">next place.</span>
