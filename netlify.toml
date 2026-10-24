@@ -1,0 +1,6 @@
+# The custom domain is canonical; NEXTAUTH_URL points at it.
+[[redirects]]
+  from = "https://life-world.netlify.app/*"
+  to = "https://lifeworld.umitvice.com/:splat"
+  status = 301
+  force = true
